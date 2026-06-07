@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}STOK.{% endblock %}</title>
+    <title>{% block title %}NEXUS.{% endblock %}</title>
     <!-- Google Fonts: Syne and DM Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -528,7 +528,7 @@
 <body>
     <div class="sidebar">
         <div>
-            <a href="{{ url_for('dashboard') }}" class="logo">STOK<span>.</span></a>
+            <a href="{{ url_for('dashboard') }}" class="logo">NEXUS<span>.</span></a>
             <ul class="nav-links">
                 <li><a href="{{ url_for('dashboard') }}" class="{% if request.path == '/' %}active{% endif %}">Dashboard</a></li>
                 <li><a href="{{ url_for('products') }}" class="{% if request.path == '/products' %}active{% endif %}">Products</a></li>

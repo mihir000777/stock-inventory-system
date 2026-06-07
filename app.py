@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "stok_auth_secret_key_998877")
+app.secret_key = os.environ.get("SECRET_KEY", "nexus_auth_secret_key_998877")
 
 # Database Connection Context Manager
 @contextmanager
