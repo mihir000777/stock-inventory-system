@@ -2,6 +2,7 @@ import os
 # pyrefly: ignore [missing-import]
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import psycopg2
+from psycopg2.pool import ThreadedConnectionPool
 from psycopg2.extras import RealDictCursor
 from contextlib import contextmanager
 from datetime import datetime
@@ -11,30 +12,58 @@ from functools import wraps
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "nexus_auth_secret_key_998877")
 
+# Initialize ThreadedConnectionPool
+db_url = os.environ.get("DATABASE_URL")
+if db_url:
+    if db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql://", 1)
+    try:
+        db_pool = ThreadedConnectionPool(1, 20, dsn=db_url)
+    except Exception as e:
+        print(f"Failed to initialize Connection Pool: {e}")
+        db_pool = None
+else:
+    db_pool = None
+
 # Database Connection Context Manager
 @contextmanager
 def get_db_cursor():
-    db_url = os.environ.get("DATABASE_URL")
-    if not db_url:
-        raise ValueError("DATABASE_URL environment variable is not set. Please configure it.")
-    
-    if db_url.startswith("postgres://"):
-        db_url = db_url.replace("postgres://", "postgresql://", 1)
-        
-    conn = None
-    try:
-        conn = psycopg2.connect(db_url)
-        conn.autocommit = False
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            yield cur
-        conn.commit()
-    except Exception as e:
-        if conn:
-            conn.rollback()
-        raise e
-    finally:
-        if conn:
-            conn.close()
+    if not db_pool:
+        # Fallback to direct connection if pool is not initialized
+        db_url = os.environ.get("DATABASE_URL")
+        if not db_url:
+            raise ValueError("DATABASE_URL environment variable is not set. Please configure it.")
+        if db_url.startswith("postgres://"):
+            db_url = db_url.replace("postgres://", "postgresql://", 1)
+        conn = None
+        try:
+            conn = psycopg2.connect(db_url)
+            conn.autocommit = False
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                yield cur
+            conn.commit()
+        except Exception as e:
+            if conn:
+                conn.rollback()
+            raise e
+        finally:
+            if conn:
+                conn.close()
+    else:
+        conn = None
+        try:
+            conn = db_pool.getconn()
+            conn.autocommit = False
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                yield cur
+            conn.commit()
+        except Exception as e:
+            if conn:
+                conn.rollback()
+            raise e
+        finally:
+            if conn:
+                db_pool.putconn(conn)
 
 # Decorators for Authentication & Access Control
 def login_required(f):
