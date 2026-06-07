@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Customers{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Customers</h1>
+    <p class="page-description">Manage client directory for sales tracking.</p>
+</div>
+
+<!-- Add Customer Form -->
+<div class="glass-panel">
+    <div class="panel-heading">Add New Customer</div>
+    <form action="{{ url_for('customers') }}" method="POST">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="name">Customer Name *</label>
+                <input type="text" id="name" name="name" class="form-control" placeholder="e.g. Alice Johnson" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="text" id="phone" name="phone" class="form-control" placeholder="+1-555-4433">
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="alice@gmail.com">
+            </div>
+            <div class="form-group" style="grid-column: span 2;">
+                <label for="address">Address</label>
+                <input type="text" id="address" name="address" class="form-control" placeholder="12 Main St, San Jose">
+            </div>
+            <div class="form-group" style="display:flex; align-items:flex-end;">
+                <button type="submit" class="btn btn-primary" style="width:100%;">Add Customer</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Customers Table -->
+<div class="glass-panel">
+    <div class="panel-heading">Customer Directory</div>
+    {% if customers %}
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Address</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in customers %}
+                <tr>
+                    <td>#{{ c.customer_id }}</td>
+                    <td style="color: var(--text-color);">{{ c.name }}</td>
+                    <td>{{ c.phone or 'N/A' }}</td>
+                    <td>{{ c.email or 'N/A' }}</td>
+                    <td>{{ c.address or 'N/A' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">No customers registered.</div>
+    {% endif %}
+</div>
+{% endblock %}

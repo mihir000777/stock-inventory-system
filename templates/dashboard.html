@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Dashboard</h1>
+    <p class="page-description">System overview and recent activity feed.</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="dashboard-stats">
+    <div class="stat-card">
+        <span class="stat-label">Total Products</span>
+        <span class="stat-number">{{ total_products }}</span>
+        <span class="stat-subtext">Catalog listings</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Low Stock</span>
+        <span class="stat-number {% if low_stock_count > 0 %}danger{% endif %}">{{ low_stock_count }}</span>
+        <span class="stat-subtext">Below 10 units</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Purchases</span>
+        <span class="stat-number">{{ total_purchases }}</span>
+        <span class="stat-subtext">Inbound orders</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Sales</span>
+        <span class="stat-number">{{ total_sales }}</span>
+        <span class="stat-subtext">Outbound orders</span>
+    </div>
+</div>
+
+{% if session.get('role') == 'admin' %}
+<!-- Quick Add Product Form (Admin Only) -->
+<div class="glass-panel">
+    <div class="panel-heading">Quick Add Product</div>
+    <form action="{{ url_for('products') }}" method="POST">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="name">Product Name *</label>
+                <input type="text" id="name" name="name" class="form-control" placeholder="e.g. USB-C Cable" required>
+            </div>
+            <div class="form-group">
+                <label for="category">Category</label>
+                <input type="text" id="category" name="category" class="form-control" placeholder="e.g. Accessories">
+            </div>
+            <div class="form-group">
+                <label for="price">Price ($)</label>
+                <input type="number" id="price" name="price" step="0.01" min="0" class="form-control" placeholder="0.00" required>
+            </div>
+            <div class="form-group">
+                <label for="quantity">Quantity</label>
+                <input type="number" id="quantity" name="quantity" min="0" class="form-control" placeholder="0" required>
+            </div>
+            <div class="form-group">
+                <label for="supplier_id">Supplier</label>
+                <select id="supplier_id" name="supplier_id" class="form-control">
+                    <option value="">-- None --</option>
+                    {% for s in suppliers %}
+                    <option value="{{ s.supplier_id }}">{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group" style="display:flex; align-items:flex-end;">
+                <button type="submit" class="btn btn-primary" style="width:100%;">Add Product</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endif %}
+
+<!-- Recent Activity Grid -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+    <!-- Recent Purchases -->
+    <div class="glass-panel">
+        <div class="panel-heading">Recent Purchases</div>
+        {% if recent_purchases %}
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th class="text-center">Qty</th>
+                        <th>Supplier</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in recent_purchases %}
+                    <tr>
+                        <td style="color: var(--text-color);">{{ p.product_name or 'N/A' }}</td>
+                        <td class="text-center" style="color: var(--accent-green);">+{{ p.quantity }}</td>
+                        <td>{{ p.supplier_name or 'N/A' }}</td>
+                        <td>{{ p.purchase_date | dateformat }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">No purchase records yet.</div>
+        {% endif %}
+    </div>
+
+    <!-- Recent Sales -->
+    <div class="glass-panel">
+        <div class="panel-heading">Recent Sales</div>
+        {% if recent_sales %}
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th class="text-center">Qty</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in recent_sales %}
+                    <tr>
+                        <td style="color: var(--text-color);">{{ s.product_name or 'N/A' }}</td>
+                        <td class="text-center" style="color: var(--danger);">-{{ s.qty_sold }}</td>
+                        <td>{{ s.sales_date | dateformat }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">No sales records yet.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

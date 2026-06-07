@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Suppliers{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Suppliers</h1>
+    <p class="page-description">Manage vendor and procurement partner directory.</p>
+</div>
+
+<!-- Add Supplier Form -->
+<div class="glass-panel">
+    <div class="panel-heading">Add New Supplier</div>
+    <form action="{{ url_for('suppliers') }}" method="POST">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="name">Supplier Name *</label>
+                <input type="text" id="name" name="name" class="form-control" placeholder="e.g. Acme Corp" required>
+            </div>
+            <div class="form-group">
+                <label for="phone_no">Phone</label>
+                <input type="text" id="phone_no" name="phone_no" class="form-control" placeholder="+1-555-0100">
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="contact@acme.com">
+            </div>
+            <div class="form-group">
+                <label for="city">City</label>
+                <input type="text" id="city" name="city" class="form-control" placeholder="e.g. Boston">
+            </div>
+            <div class="form-group" style="grid-column: span 2;">
+                <label for="address">Address</label>
+                <input type="text" id="address" name="address" class="form-control" placeholder="123 Industrial Parkway">
+            </div>
+            <div class="form-group" style="display:flex; align-items:flex-end;">
+                <button type="submit" class="btn btn-primary" style="width:100%;">Add Supplier</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Suppliers Table -->
+<div class="glass-panel">
+    <div class="panel-heading">Registered Suppliers</div>
+    {% if suppliers %}
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>City</th>
+                    <th>Address</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in suppliers %}
+                <tr>
+                    <td>#{{ s.supplier_id }}</td>
+                    <td style="color: var(--text-color);">{{ s.name }}</td>
+                    <td>{{ s.phone_no or 'N/A' }}</td>
+                    <td>{{ s.email or 'N/A' }}</td>
+                    <td><span class="badge badge-info">{{ s.city or 'N/A' }}</span></td>
+                    <td>{{ s.address or 'N/A' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">No suppliers registered.</div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - STOK.</title>
+    <!-- Google Fonts: Syne and DM Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #0a0a0f;
+            --surface: #111118;
+            --surface-2: #18181f;
+            --accent-green: #c8f050;
+            --danger: #ff4d6d;
+            --warning: #ffb830;
+            --text-color: #ffffff;
+            --text-muted: #88888e;
+            --border: 1px solid #ffffff12;
+            --font-heading: 'Syne', sans-serif;
+            --font-body: 'DM Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 380px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 3rem;
+            color: var(--text-color);
+            letter-spacing: -2px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .logo span {
+            color: var(--accent-green);
+        }
+
+        .auth-card {
+            background-color: var(--surface);
+            border: var(--border);
+            border-radius: 4px;
+            padding: 2rem;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .auth-card-title {
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            border-bottom: var(--border);
+            padding-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .form-control {
+            background-color: var(--surface-2);
+            border: var(--border);
+            border-radius: 4px;
+            color: var(--text-color);
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            padding: 0.65rem 0.85rem;
+            width: 100%;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-green);
+        }
+
+        .btn {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 0;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 0.5rem;
+            transition: opacity 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-green);
+            color: #000000;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .auth-footer {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .auth-footer a {
+            color: var(--accent-green);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Alerts inside auth layout */
+        .flash-container {
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+            border: var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .alert-success {
+            background-color: rgba(200, 240, 80, 0.1);
+            color: var(--accent-green);
+            border-color: rgba(200, 240, 80, 0.2);
+        }
+
+        .alert-danger {
+            background-color: rgba(255, 77, 109, 0.1);
+            color: var(--danger);
+            border-color: rgba(255, 77, 109, 0.2);
+        }
+
+        .alert-warning {
+            background-color: rgba(255, 184, 48, 0.1);
+            color: var(--warning);
+            border-color: rgba(255, 184, 48, 0.2);
+        }
+
+        .alert-close {
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            font-size: 1.1rem;
+            line-height: 1;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="logo">STOK<span>.</span></div>
+        
+        <div class="flash-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <span>{{ message }}</span>
+                            <button class="alert-close" onclick="this.parentElement.style.display='none';">&times;</button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <div class="auth-card">
+            <h2 class="auth-card-title">Register Account</h2>
+            <form action="{{ url_for('register') }}" method="POST">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="e.g. John Doe" required autocomplete="name">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="e.g. john@store.com" required autocomplete="email">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="create password" required autocomplete="new-password">
+                </div>
+
+                <div class="form-group">
+                    <label for="department">Department</label>
+                    <input type="text" id="department" name="department" class="form-control" placeholder="e.g. Procurement" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </form>
+            
+            <div class="auth-footer">
+                Already registered? <a href="{{ url_for('login') }}">Login here</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

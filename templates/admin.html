@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Panel{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Admin Panel</h1>
+    <p class="page-description">Manage user accounts — approve, deactivate, or change roles.</p>
+</div>
+
+<div class="glass-panel">
+    <div class="panel-heading">User Accounts</div>
+    {% if users %}
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th class="text-center">Role</th>
+                    <th class="text-center">Status</th>
+                    <th>Joined</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr class="{% if u.status == 'pending' %}highlight-row-danger{% endif %}">
+                    <td>#{{ u.user_id }}</td>
+                    <td style="color: var(--text-color);">{{ u.name }}</td>
+                    <td>{{ u.email }}</td>
+                    <td class="text-center">
+                        {% if u.role == 'admin' %}
+                        <span class="badge badge-info">Admin</span>
+                        {% else %}
+                        <span class="badge badge-success">Staff</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if u.status == 'active' %}
+                        <span class="badge badge-success">Active</span>
+                        {% elif u.status == 'pending' %}
+                        <span class="badge badge-warning">Pending</span>
+                        {% elif u.status == 'inactive' %}
+                        <span class="badge badge-danger">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ u.created_at | datetimeformat }}</td>
+                    <td class="text-center">
+                        <div class="action-buttons" style="justify-content:center; flex-wrap:wrap;">
+                            {% if u.user_id != session.get('user_id') %}
+                                {% if u.status != 'active' %}
+                                <form action="{{ url_for('admin_user_action', user_id=u.user_id, action='approve') }}" method="POST" class="action-form">
+                                    <button type="submit" class="btn btn-primary" style="padding:0.3rem 0.5rem; font-size:0.65rem;">Approve</button>
+                                </form>
+                                {% endif %}
+
+                                {% if u.status != 'inactive' %}
+                                <form action="{{ url_for('admin_user_action', user_id=u.user_id, action='deactivate') }}" method="POST" class="action-form">
+                                    <button type="submit" class="btn btn-danger" style="padding:0.3rem 0.5rem; font-size:0.65rem;" onclick="return confirm('Deactivate this user?');">Deactivate</button>
+                                </form>
+                                {% endif %}
+
+                                {% if u.role != 'admin' %}
+                                <form action="{{ url_for('admin_user_action', user_id=u.user_id, action='make_admin') }}" method="POST" class="action-form">
+                                    <button type="submit" class="btn btn-secondary" style="padding:0.3rem 0.5rem; font-size:0.65rem;">Make Admin</button>
+                                </form>
+                                {% endif %}
+
+                                {% if u.role != 'staff' %}
+                                <form action="{{ url_for('admin_user_action', user_id=u.user_id, action='make_staff') }}" method="POST" class="action-form">
+                                    <button type="submit" class="btn btn-secondary" style="padding:0.3rem 0.5rem; font-size:0.65rem;">Make Staff</button>
+                                </form>
+                                {% endif %}
+                            {% else %}
+                                <span style="font-size:0.7rem; color: var(--text-muted); font-style:italic;">You (no self-action)</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">No user accounts found.</div>
+    {% endif %}
+</div>
+{% endblock %}

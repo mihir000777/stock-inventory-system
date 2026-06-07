@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}STOK.{% endblock %}</title>
+    <!-- Google Fonts: Syne and DM Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Reset and Variables */
+        :root {
+            --bg-color: #0a0a0f;
+            --surface: #111118;
+            --surface-2: #18181f;
+            --accent-green: #c8f050;
+            --accent-purple: #7c6dfa;
+            --danger: #ff4d6d;
+            --warning: #ffb830;
+            --text-color: #ffffff;
+            --text-muted: #88888e;
+            --border: 1px solid #ffffff12;
+            --font-heading: 'Syne', sans-serif;
+            --font-body: 'DM Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 200px;
+            background-color: var(--surface);
+            border-right: var(--border);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 2rem 1.2rem;
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 2.2rem;
+            color: var(--text-color);
+            letter-spacing: -1.5px;
+            margin-bottom: 2rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .logo span {
+            color: var(--accent-green);
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-family: var(--font-heading);
+            font-weight: 700;
+            display: block;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-color);
+            background-color: var(--surface-2);
+            border: var(--border);
+        }
+
+        .nav-links a.active {
+            border-left: 3px solid var(--accent-green);
+        }
+
+        .sidebar-section-title {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin: 1.5rem 0 0.5rem 0.8rem;
+            font-weight: 600;
+        }
+
+        /* User Info Section in Sidebar */
+        .user-info {
+            border-top: var(--border);
+            padding-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .user-name {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .role-pill {
+            display: inline-block;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            font-family: var(--font-heading);
+            font-weight: 800;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            width: fit-content;
+        }
+
+        .role-pill.admin {
+            background-color: var(--accent-purple);
+            color: #ffffff;
+        }
+
+        .role-pill.staff {
+            background-color: var(--surface-2);
+            color: var(--accent-green);
+            border: var(--border);
+        }
+
+        .logout-link {
+            font-family: var(--font-heading);
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--danger);
+            text-decoration: none;
+            text-transform: uppercase;
+            margin-top: 0.4rem;
+            display: inline-block;
+            transition: opacity 0.2s;
+        }
+
+        .logout-link:hover {
+            opacity: 0.8;
+        }
+
+        /* Main Content Wrapper */
+        .content-wrapper {
+            margin-left: 200px;
+            width: calc(100% - 200px);
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Form styling */
+        .glass-panel {
+            background-color: var(--surface);
+            border: var(--border);
+            border-radius: 4px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .panel-heading {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+            letter-spacing: 0.5px;
+            color: var(--text-color);
+            border-bottom: var(--border);
+            padding-bottom: 0.6rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.2rem;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .form-control {
+            background-color: var(--surface-2);
+            border: var(--border);
+            border-radius: 4px;
+            color: var(--text-color);
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            padding: 0.6rem 0.8rem;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-green);
+        }
+
+        select.form-control {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2388888e'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 0.8rem;
+            padding-right: 2rem;
+        }
+
+        /* Buttons */
+        .btn {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            padding: 0.65rem 1.2rem;
+            border: none;
+            border-radius: 0px; /* No radius */
+            cursor: pointer;
+            transition: opacity 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-green);
+            color: #000000;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: #ffffff;
+        }
+
+        .btn-danger:hover {
+            opacity: 0.9;
+        }
+
+        .btn-secondary {
+            background-color: var(--surface-2);
+            color: var(--text-color);
+            border: var(--border);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--surface);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Tables */
+        .table-responsive {
+            overflow-x: auto;
+            width: 100%;
+            border: var(--border);
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.85rem;
+            background-color: var(--surface);
+        }
+
+        th {
+            background-color: var(--surface-2);
+            color: var(--text-color);
+            font-family: var(--font-heading);
+            font-weight: 700;
+            padding: 0.75rem 1rem;
+            border-bottom: var(--border);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: var(--border);
+            color: var(--text-muted);
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: rgba(255, 255, 255, 0.01);
+            color: var(--text-color);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            font-size: 0.6rem;
+            font-weight: 800;
+            font-family: var(--font-heading);
+            text-transform: uppercase;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+        }
+
+        .badge-danger {
+            background-color: rgba(255, 77, 109, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(255, 77, 109, 0.3);
+        }
+
+        .badge-success {
+            background-color: rgba(200, 240, 80, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(200, 240, 80, 0.3);
+        }
+
+        .badge-warning {
+            background-color: rgba(255, 184, 48, 0.15);
+            color: var(--warning);
+            border: 1px solid rgba(255, 184, 48, 0.3);
+        }
+
+        .badge-info {
+            background-color: rgba(124, 109, 250, 0.15);
+            color: var(--accent-purple);
+            border: 1px solid rgba(124, 109, 250, 0.3);
+        }
+
+        /* Flash Messages */
+        .flash-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .alert {
+            padding: 0.8rem 1rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.6rem;
+            border: var(--border);
+        }
+
+        .alert-success {
+            background-color: rgba(200, 240, 80, 0.1);
+            color: var(--accent-green);
+            border-color: rgba(200, 240, 80, 0.2);
+        }
+
+        .alert-danger {
+            background-color: rgba(255, 77, 109, 0.1);
+            color: var(--danger);
+            border-color: rgba(255, 77, 109, 0.2);
+        }
+
+        .alert-warning {
+            background-color: rgba(255, 184, 48, 0.1);
+            color: var(--warning);
+            border-color: rgba(255, 184, 48, 0.2);
+        }
+
+        .alert-close {
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            font-size: 1.1rem;
+            line-height: 1;
+            opacity: 0.6;
+        }
+
+        .alert-close:hover {
+            opacity: 1;
+        }
+
+        /* Common Page Layouts */
+        .page-header {
+            margin-bottom: 2rem;
+            border-bottom: var(--border);
+            padding-bottom: 1rem;
+        }
+
+        .page-title {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            color: var(--text-color);
+            letter-spacing: -0.5px;
+        }
+
+        .page-description {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        /* Stats Blocks */
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background-color: var(--surface);
+            border: var(--border);
+            border-radius: 4px;
+            padding: 1.5rem;
+        }
+
+        .stat-label {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-number {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 2.25rem;
+            color: var(--accent-green);
+            line-height: 1.1;
+        }
+
+        .stat-number.danger {
+            color: var(--danger);
+        }
+
+        .stat-subtext {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.4rem;
+        }
+
+        /* Helpers */
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .font-semibold { font-weight: 500; }
+        
+        .empty-state {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            color: var(--text-muted);
+        }
+
+        .highlight-row-danger {
+            background-color: rgba(255, 77, 109, 0.04) !important;
+        }
+
+        .highlight-row-danger td {
+            color: var(--danger) !important;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.4rem;
+        }
+        
+        .action-form {
+            display: inline-block;
+        }
+
+        /* Print styling */
+        @media print {
+            .sidebar { display: none !important; }
+            .content-wrapper { margin-left: 0 !important; width: 100% !important; padding: 0 !important; }
+            .glass-panel form, .btn { display: none !important; }
+            th, td { border-bottom: 1px solid #000 !important; color: #000 !important; }
+            body { background: #fff !important; color: #000 !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div>
+            <a href="{{ url_for('dashboard') }}" class="logo">STOK<span>.</span></a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('dashboard') }}" class="{% if request.path == '/' %}active{% endif %}">Dashboard</a></li>
+                <li><a href="{{ url_for('products') }}" class="{% if request.path == '/products' %}active{% endif %}">Products</a></li>
+                <li><a href="{{ url_for('purchase') }}" class="{% if request.path == '/purchase' %}active{% endif %}">Purchases</a></li>
+                <li><a href="{{ url_for('sale') }}" class="{% if request.path == '/sale' %}active{% endif %}">Sales</a></li>
+                
+                {% if session.get('role') == 'admin' %}
+                <div class="sidebar-section-title">Directory</div>
+                <li><a href="{{ url_for('suppliers') }}" class="{% if request.path == '/suppliers' %}active{% endif %}">Suppliers</a></li>
+                <li><a href="{{ url_for('employees') }}" class="{% if request.path == '/employees' %}active{% endif %}">Employees</a></li>
+                <li><a href="{{ url_for('customers') }}" class="{% if request.path == '/customers' %}active{% endif %}">Customers</a></li>
+                
+                <div class="sidebar-section-title">Admin</div>
+                <li><a href="{{ url_for('report') }}" class="{% if request.path == '/report' %}active{% endif %}">Report</a></li>
+                <li><a href="{{ url_for('admin_panel') }}" class="{% if request.path == '/admin' %}active{% endif %}">Admin Panel</a></li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <div class="user-info">
+            <span class="user-name">{{ session.get('name', 'Operator') }}</span>
+            <span class="role-pill {{ session.get('role', 'staff') }}">
+                {{ session.get('role', 'staff') }}
+            </span>
+            <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
+        </div>
+    </div>
+
+    <div class="content-wrapper">
+        <div class="flash-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <span>{{ message }}</span>
+                            <button class="alert-close" onclick="this.parentElement.style.display='none';">&times;</button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

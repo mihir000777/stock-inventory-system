@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Report{% endblock %}
+
+{% block content %}
+<div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start;">
+    <div>
+        <h1 class="page-title">Inventory Report</h1>
+        <p class="page-description">Complete stock valuation breakdown by product.</p>
+    </div>
+    <button onclick="window.print();" class="btn btn-secondary">Print Report</button>
+</div>
+
+<!-- Report Table -->
+<div class="glass-panel">
+    <div class="panel-heading">Asset Valuation Ledger</div>
+    {% if report_data %}
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th class="text-right">Unit Price</th>
+                    <th class="text-right">Quantity</th>
+                    <th class="text-right">Total Value</th>
+                    <th class="text-center">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in report_data %}
+                <tr class="{% if item.quantity < 10 %}highlight-row-danger{% endif %}">
+                    <td>{{ loop.index }}</td>
+                    <td style="color: var(--text-color);">{{ item.name }}</td>
+                    <td>{{ item.category or 'N/A' }}</td>
+                    <td class="text-right">{{ item.price | currency }}</td>
+                    <td class="text-right" style="font-weight:500;">{{ item.quantity }}</td>
+                    <td class="text-right" style="color: var(--accent-green); font-weight:500;">{{ item.total_value | currency }}</td>
+                    <td class="text-center">
+                        {% if item.quantity < 10 %}
+                        <span class="badge badge-danger">Low Stock</span>
+                        {% else %}
+                        <span class="badge badge-success">OK</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                <!-- Grand Total Row -->
+                <tr style="background-color: var(--surface-2); border-top: 2px solid var(--accent-green);">
+                    <td colspan="4" style="color: var(--text-color); font-family: var(--font-heading); font-weight:800; text-transform:uppercase;">Grand Total</td>
+                    <td class="text-right" style="color: var(--text-color); font-weight:500;">{{ total_items }}</td>
+                    <td class="text-right" style="color: var(--accent-green); font-family: var(--font-heading); font-weight:800; font-size:1.1rem;">{{ total_value | currency }}</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">No products in inventory to report.</div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Sales{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Sales</h1>
+    <p class="page-description">Record outbound sales. Stock will decrease automatically. Insufficient stock will be rejected.</p>
+</div>
+
+<!-- Record Sale Form -->
+<div class="glass-panel">
+    <div class="panel-heading">Checkout Sale Order</div>
+    <form action="{{ url_for('sale') }}" method="POST">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="product_id">Product *</label>
+                <select id="product_id" name="product_id" class="form-control" required>
+                    <option value="">-- Select Product --</option>
+                    {% for p in products %}
+                    <option value="{{ p.product_id }}">{{ p.name }} ({{ p.quantity }} available)</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="qty_sold">Quantity *</label>
+                <input type="number" id="qty_sold" name="qty_sold" min="1" class="form-control" placeholder="1" required>
+            </div>
+            <div class="form-group">
+                <label for="customer_id">Customer</label>
+                <select id="customer_id" name="customer_id" class="form-control">
+                    <option value="">-- Walk-in --</option>
+                    {% for c in customers %}
+                    <option value="{{ c.customer_id }}">{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sales_date">Date</label>
+                <input type="date" id="sales_date" name="sales_date" class="form-control">
+            </div>
+            <div class="form-group" style="display:flex; align-items:flex-end;">
+                <button type="submit" class="btn btn-primary" style="width:100%;">Record Sale</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Sales History -->
+<div class="glass-panel">
+    <div class="panel-heading">Sales Ledger</div>
+    {% if sales %}
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Product</th>
+                    <th class="text-center">Qty Sold</th>
+                    <th>Customer</th>
+                    <th>Employee</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in sales %}
+                <tr>
+                    <td>#{{ s.sales_id }}</td>
+                    <td style="color: var(--text-color);">{{ s.product_name or 'N/A' }}</td>
+                    <td class="text-center" style="color: var(--danger); font-weight:500;">-{{ s.qty_sold }}</td>
+                    <td>{{ s.customer_name or 'Walk-in' }}</td>
+                    <td>{{ s.employee_name or 'System' }}</td>
+                    <td>{{ s.sales_date | dateformat }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">No sales records yet.</div>
+    {% endif %}
+</div>
+{% endblock %}

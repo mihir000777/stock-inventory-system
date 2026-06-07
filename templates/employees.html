@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Employees{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Employees</h1>
+    <p class="page-description">Manage staff members and system operators.</p>
+</div>
+
+<!-- Add Employee Form -->
+<div class="glass-panel">
+    <div class="panel-heading">Register Employee</div>
+    <form action="{{ url_for('employees') }}" method="POST">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="name">Full Name *</label>
+                <input type="text" id="name" name="name" class="form-control" placeholder="e.g. John Doe" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="john@company.com">
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="text" id="phone" name="phone" class="form-control" placeholder="+1-555-9011">
+            </div>
+            <div class="form-group">
+                <label for="department">Department</label>
+                <input type="text" id="department" name="department" class="form-control" placeholder="e.g. Sales">
+            </div>
+            <div class="form-group" style="display:flex; align-items:flex-end;">
+                <button type="submit" class="btn btn-primary" style="width:100%;">Register</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Employees Table -->
+<div class="glass-panel">
+    <div class="panel-heading">Staff Directory</div>
+    {% if employees %}
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Department</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in employees %}
+                <tr>
+                    <td>#{{ e.employee_id }}</td>
+                    <td style="color: var(--text-color);">{{ e.name }}</td>
+                    <td>{{ e.email or 'N/A' }}</td>
+                    <td>{{ e.phone or 'N/A' }}</td>
+                    <td><span class="badge badge-info">{{ e.department or 'N/A' }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">No employees registered.</div>
+    {% endif %}
+</div>
+{% endblock %}
