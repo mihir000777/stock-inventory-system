@@ -678,6 +678,19 @@ def customers():
         flash(f"Error loading customers: {str(e)}", "danger")
         return render_template('customers.html', customers=[])
 
+# --- API Endpoints ---
+
+@app.route('/api/low-stock')
+@login_required
+def api_low_stock():
+    try:
+        with get_db_cursor() as cur:
+            cur.execute("SELECT Product_ID, Name, Quantity FROM Product WHERE Quantity < 10 ORDER BY Quantity ASC")
+            low_stock_items = cur.fetchall()
+        return {"status": "success", "items": low_stock_items}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}, 500
+
 # --- Admin Panel Route ---
 
 @app.route('/admin')

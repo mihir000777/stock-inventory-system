@@ -223,17 +223,47 @@
             </nav>
         </div>
         <div class="flex items-center gap-3 md:gap-4">
-            <button class="text-on-surface-variant hover:bg-surface-container-high p-2 rounded-xl transition-all relative">
-                <span class="material-symbols-outlined">notifications</span>
-                <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-primary-container rounded-full ring-2 ring-background"></span>
-            </button>
+            <!-- Notification Dropdown -->
+            <div class="relative inline-block text-left" id="notification-dropdown-container">
+                <button id="notification-btn" class="text-on-surface-variant hover:bg-surface-container-high p-2 rounded-xl transition-all relative flex items-center justify-center focus:outline-none" aria-haspopup="true">
+                    <span class="material-symbols-outlined">notifications</span>
+                    <span id="notification-badge" class="hidden absolute top-2 right-2 w-1.5 h-1.5 bg-error rounded-full ring-2 ring-background"></span>
+                </button>
+                
+                <!-- Notification Menu Dropdown -->
+                <div id="notification-menu" class="hidden absolute right-0 mt-2 w-80 bg-surface-container border border-outline-variant rounded-xl shadow-2xl z-50 overflow-hidden" role="menu" aria-orientation="vertical">
+                    <div class="px-4 py-3 border-b border-outline-variant bg-surface-container-high flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px] text-primary-container">notifications</span>
+                            <span class="font-label-md text-label-md text-primary font-bold uppercase tracking-wider">Low Stock Alerts</span>
+                        </div>
+                        <span id="low-stock-count-badge" class="bg-surface-container-high text-on-surface-variant font-label-sm text-[10px] px-2 py-0.5 rounded-full font-bold">0</span>
+                    </div>
+                    <div class="max-h-60 overflow-y-auto" id="notification-items-list">
+                        <!-- Content dynamically loaded via JS -->
+                        <div class="px-4 py-6 text-center text-on-surface-variant/50 text-body-md flex flex-col items-center gap-2">
+                            <span class="material-symbols-outlined text-[28px] animate-spin text-primary-container">sync</span>
+                            <p class="font-label-md text-label-md uppercase tracking-wider">Checking levels...</p>
+                        </div>
+                    </div>
+                    <div class="px-4 py-2 bg-surface-container-high border-t border-outline-variant/30 text-center">
+                        <a href="{{ url_for('products') }}" class="text-[10px] font-label-sm text-primary-container hover:text-primary transition-colors uppercase tracking-wider block py-1 font-bold">
+                            Go to Inventory
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
             <div class="h-6 w-px bg-outline-variant"></div>
             
-            <!-- Quick Role Info Mobile -->
-            <div class="md:hidden flex items-center gap-2">
-                <div class="w-8 h-8 rounded-full border border-primary-container bg-surface-container-high flex items-center justify-center font-bold text-primary text-xs uppercase">
+            <!-- Quick Role Info Mobile & Logout -->
+            <div class="md:hidden flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full border border-primary-container bg-surface-container-high flex items-center justify-center font-bold text-primary text-xs uppercase" title="{{ session.get('name', 'Operator') }} ({{ session.get('role', 'staff') }})">
                     {{ session.get('name', 'O')[0] }}
                 </div>
+                <a class="text-error hover:text-red-400 p-2 rounded-xl transition-all flex items-center justify-center hover:bg-surface-container-high" href="{{ url_for('logout') }}" title="Sign Out">
+                    <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">logout</span>
+                </a>
             </div>
             
             <span class="hidden md:inline-block border border-outline px-4 py-1.5 rounded-lg text-label-md font-label-md text-on-surface-variant hover:bg-surface-container-high transition-all cursor-pointer">
@@ -301,6 +331,87 @@
             searchInput.addEventListener('blur', () => {
                 searchInput.classList.remove('w-80');
             });
+        }
+
+        // Notification Dropdown Toggle & Data Fetching
+        const notificationBtn = document.getElementById('notification-btn');
+        const notificationMenu = document.getElementById('notification-menu');
+        const notificationBadge = document.getElementById('notification-badge');
+        const lowStockCountBadge = document.getElementById('low-stock-count-badge');
+        const notificationItemsList = document.getElementById('notification-items-list');
+
+        if (notificationBtn && notificationMenu) {
+            notificationBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                notificationMenu.classList.toggle('hidden');
+            });
+
+            document.addEventListener('click', (e) => {
+                const container = document.getElementById('notification-dropdown-container');
+                if (container && !container.contains(e.target)) {
+                    notificationMenu.classList.add('hidden');
+                }
+            });
+        }
+
+        async function fetchLowStockAlerts() {
+            try {
+                const response = await fetch('/api/low-stock');
+                if (!response.ok) throw new Error('Failed to fetch low stock alerts');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    const items = data.items || [];
+                    const count = items.length;
+                    
+                    // Update badges
+                    if (count > 0) {
+                        notificationBadge.classList.remove('hidden');
+                        lowStockCountBadge.textContent = count;
+                        lowStockCountBadge.classList.remove('bg-surface-container-high', 'text-on-surface-variant');
+                        lowStockCountBadge.classList.add('bg-error-container', 'text-on-error-container');
+                        
+                        // Populate items
+                        notificationItemsList.innerHTML = items.map(item => `
+                            <a href="${window.location.origin}/products?edit_id=${item.product_id}" class="flex items-start gap-3 px-4 py-3 hover:bg-surface-container-high transition-colors border-b border-outline-variant/30">
+                                <span class="material-symbols-outlined text-error mt-0.5" style="font-variation-settings: 'FILL' 1;">warning</span>
+                                <div class="overflow-hidden flex-1">
+                                    <p class="font-label-md text-label-md text-on-surface font-semibold truncate" title="${item.name}">${item.name}</p>
+                                    <p class="text-[11px] text-on-surface-variant font-body-md mt-0.5">Stock critical: <span class="text-error font-bold">${item.quantity}</span> units remaining</p>
+                                </div>
+                            </a>
+                        `).join('');
+                    } else {
+                        notificationBadge.classList.add('hidden');
+                        lowStockCountBadge.textContent = '0';
+                        lowStockCountBadge.classList.remove('bg-error-container', 'text-on-error-container');
+                        lowStockCountBadge.classList.add('bg-surface-container-high', 'text-on-surface-variant');
+                        
+                        notificationItemsList.innerHTML = `
+                            <div class="px-4 py-8 text-center text-on-surface-variant/80 flex flex-col items-center gap-2">
+                                <span class="material-symbols-outlined text-[32px] text-primary-container" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                <p class="font-label-md text-label-md uppercase tracking-wider font-bold text-primary">All Systems Nominal</p>
+                                <p class="text-[10px] text-on-surface-variant mt-0.5">No products are low in stock.</p>
+                            </div>
+                        `;
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching low stock alerts:", error);
+                notificationItemsList.innerHTML = `
+                    <div class="px-4 py-6 text-center text-error">
+                        <span class="material-symbols-outlined text-[28px] mb-1">error</span>
+                        <p class="font-label-md text-label-md uppercase tracking-wider font-bold">Telemetry Failure</p>
+                        <p class="text-[10px] text-on-surface-variant mt-1">Failed to query active inventory levels.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Fetch initially and check every 30 seconds
+        if (notificationItemsList) {
+            fetchLowStockAlerts();
+            setInterval(fetchLowStockAlerts, 30000);
         }
     </script>
 </body>
