@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <!-- Design System Accent Construction Guidelines -->
+  <!-- Left stem top accent -->
+  <rect x="14" y="14" width="12" height="12" fill="#c8f050" opacity="0.25" />
+  
+  <!-- Right stem bottom accent -->
+  <rect x="74" y="74" width="12" height="12" fill="#c8f050" opacity="0.25" />
+  
+  <!-- Dot backing accent -->
+  <circle cx="80" cy="20" r="12" fill="#c8f050" opacity="0.25" />
+
+  <!-- Core N Shape -->
+  <path d="M 20,80 L 20,20 L 80,80 L 80,26" fill="none" stroke="#c8f050" stroke-width="12" stroke-linecap="square" stroke-linejoin="miter" />
+  
+  <!-- Core Dot at the top right -->
+  <circle cx="80" cy="20" r="8" fill="#c8f050" />
+</svg>

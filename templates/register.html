@@ -4,6 +4,7 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Register | NEXUS</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='logo.svg') }}"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -123,7 +124,8 @@
         <div class="relative bg-surface-container-low border border-white/10 rounded-xl overflow-hidden shadow-2xl">
             <!-- Header Section -->
             <div class="px-8 pt-10 pb-6 text-center">
-                <div class="inline-flex items-center justify-center mb-6">
+                <div class="inline-flex items-center justify-center gap-3 mb-6">
+                    <img src="{{ url_for('static', filename='logo.svg') }}" class="w-8 h-8 flex-shrink-0" alt="NEXUS Logo"/>
                     <span class="font-headline-md text-headline-md font-bold text-primary tracking-tighter after:content-['●'] after:ml-1 after:text-primary-container after:animate-pulse">
                         NEXUS
                     </span>

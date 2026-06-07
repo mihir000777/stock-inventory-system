@@ -4,6 +4,7 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>{% block title %}NEXUS | Command Center{% endblock %}</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='logo.svg') }}"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -129,9 +130,12 @@
 
     <!-- Side Navigation Bar (Desktop Only) -->
     <aside class="fixed left-0 top-0 h-full w-[200px] border-r border-outline-variant bg-surface-container-low md:flex hidden flex-col py-6 z-40">
-        <div class="px-6 mb-8">
-            <h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tighter after:content-['●'] after:ml-1 after:text-primary-container after:animate-pulse">NEXUS</h1>
-            <p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Terminal Controls</p>
+        <div class="px-6 mb-8 flex items-center gap-3">
+            <img src="{{ url_for('static', filename='logo.svg') }}" class="w-8 h-8 flex-shrink-0" alt="NEXUS Logo"/>
+            <div>
+                <h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tighter after:content-['●'] after:ml-1 after:text-primary-container after:animate-pulse">NEXUS</h1>
+                <p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Terminal Controls</p>
+            </div>
         </div>
         <nav class="flex-1 space-y-1 overflow-y-auto">
             <a class="flex items-center gap-3 px-4 py-3 {% if request.path == '/' %}text-primary bg-secondary-container/20 border-r-2 border-primary shadow-[0_0_12px_rgba(200,240,80,0.1)]{% else %}text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high{% endif %} transition-all duration-200" href="{{ url_for('dashboard') }}">
@@ -204,7 +208,8 @@
     <header class="sticky top-0 z-30 md:ml-[200px] h-16 bg-background/80 backdrop-blur-md border-b border-outline-variant flex justify-between items-center px-4 md:px-8">
         <div class="flex items-center gap-4 md:gap-8 flex-1">
             <!-- Mobile Toggle Placeholder (simply layout helper) -->
-            <div class="flex items-center gap-2 md:hidden">
+            <div class="flex items-center gap-2.5 md:hidden">
+                <img src="{{ url_for('static', filename='logo.svg') }}" class="w-6 h-6 flex-shrink-0" alt="NEXUS Logo"/>
                 <span class="font-headline-sm text-headline-sm font-black text-primary tracking-tighter">NEXUS</span>
                 <div class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse shadow-[0_0_8px_#c8f050]"></div>
             </div>
