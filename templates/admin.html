@@ -1,80 +1,137 @@
 {% extends 'base.html' %}
 
-{% block title %}Admin Panel{% endblock %}
+{% block title %}User Control Center | NEXUS{% endblock %}
+{% block section_title %}Admin Control{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1 class="page-title">Admin Panel</h1>
-    <p class="page-description">Manage user accounts — approve, deactivate, or change roles.</p>
+<!-- Hero Stats / Bento Header -->
+<div class="grid grid-cols-12 gap-6 mb-8">
+    <div class="col-span-12 md:col-span-8 bg-surface-container border border-outline-variant p-6 rounded-xl flex flex-col justify-between overflow-hidden relative">
+        <div class="z-10">
+            <h2 class="font-headline-lg text-headline-lg text-primary mb-2">User Control Center</h2>
+            <p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">
+                Manage access protocols, verify new terminal operators, and monitor system-wide account status from this control point.
+            </p>
+        </div>
+        <div class="flex gap-4 mt-6 z-10">
+            <span class="inline-flex items-center gap-2 border border-outline px-4 py-2 rounded-xl text-label-md font-label-md text-on-surface-variant">
+                OPERATOR ACCESS NODE ACTIVE
+            </span>
+        </div>
+        <!-- Decorative Element -->
+        <div class="absolute -right-10 -bottom-10 opacity-5 pointer-events-none">
+            <span class="material-symbols-outlined text-[200px]" style="font-variation-settings: 'FILL' 1;">group</span>
+        </div>
+    </div>
+    
+    <div class="col-span-12 md:col-span-4 grid grid-rows-2 gap-4">
+        <div class="bg-surface-container-low border border-outline-variant p-4 rounded-xl flex items-center gap-4">
+            <div class="w-12 h-12 rounded-lg bg-primary-container/10 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary-container">shield_person</span>
+            </div>
+            <div>
+                <p class="font-label-sm text-on-surface-variant uppercase tracking-tighter">Registered Users</p>
+                <p class="font-headline-sm text-headline-sm text-on-surface font-bold">{{ users|length }}</p>
+            </div>
+        </div>
+        
+        <div class="bg-surface-container-low border border-outline-variant p-4 rounded-xl flex items-center gap-4">
+            <div class="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center">
+                <span class="material-symbols-outlined text-secondary">pending_actions</span>
+            </div>
+            <div>
+                <p class="font-label-sm text-on-surface-variant uppercase tracking-tighter">Awaiting Approval</p>
+                <!-- Calculate pending count dynamically -->
+                {% set pending_count = namespace(value=0) %}
+                {% for u in users %}
+                    {% if u.status == 'pending' %}
+                        {% set pending_count.value = pending_count.value + 1 %}
+                    {% endif %}
+                {% endfor %}
+                <p class="font-headline-sm text-headline-sm text-secondary font-bold">{{ pending_count.value }}</p>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="glass-panel">
-    <div class="panel-heading">User Accounts</div>
-    {% if users %}
-    <div class="table-responsive">
-        <table>
+<!-- Users Table Section -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl overflow-hidden shadow-2xl">
+    <div class="p-6 border-b border-outline-variant flex justify-between items-center bg-surface-container/30">
+        <div class="flex items-center gap-4">
+            <h3 class="font-headline-sm text-headline-sm uppercase tracking-wider">Operator Directory</h3>
+            <span class="px-3 py-1 bg-surface-container-highest text-primary-container text-[10px] font-bold uppercase rounded-full border border-primary-container/20">Live Sync</span>
+        </div>
+    </div>
+    
+    <div class="overflow-x-auto w-full">
+        {% if users %}
+        <table class="w-full text-left border-collapse font-body-md text-xs">
             <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th class="text-center">Role</th>
-                    <th class="text-center">Status</th>
-                    <th>Joined</th>
-                    <th class="text-center">Actions</th>
+                <tr class="bg-surface-container-low/50 text-on-surface-variant uppercase font-label-sm">
+                    <th class="p-4 border-b border-outline-variant">Reg Date</th>
+                    <th class="p-4 border-b border-outline-variant">Name</th>
+                    <th class="p-4 border-b border-outline-variant">Email</th>
+                    <th class="p-4 border-b border-outline-variant text-center">Role</th>
+                    <th class="p-4 border-b border-outline-variant text-center">Status</th>
+                    <th class="p-4 border-b border-outline-variant text-right">System Actions</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="divide-y divide-outline-variant/20">
                 {% for u in users %}
-                <tr class="{% if u.status == 'pending' %}highlight-row-danger{% endif %}">
-                    <td>#{{ u.user_id }}</td>
-                    <td style="color: var(--text-color);">{{ u.name }}</td>
-                    <td>{{ u.email }}</td>
-                    <td class="text-center">
+                <tr class="hover:bg-surface-container-high transition-colors {% if u.status == 'pending' %}bg-secondary-container/5{% endif %}">
+                    <td class="p-4 text-on-surface-variant">{{ u.created_at | datetimeformat }}</td>
+                    <td class="p-4 font-bold text-on-surface font-label-md">{{ u.name }}</td>
+                    <td class="p-4 text-on-surface-variant">{{ u.email }}</td>
+                    <td class="p-4 text-center">
                         {% if u.role == 'admin' %}
-                        <span class="badge badge-info">Admin</span>
+                        <span class="px-2.5 py-0.5 rounded bg-secondary-container/20 text-secondary border border-secondary/20 text-[10px] font-bold uppercase">Admin</span>
                         {% else %}
-                        <span class="badge badge-success">Staff</span>
+                        <span class="px-2.5 py-0.5 rounded bg-primary-container/20 text-primary-container border border-primary-container/20 text-[10px] font-bold uppercase">Staff</span>
                         {% endif %}
                     </td>
-                    <td class="text-center">
+                    <td class="p-4 text-center">
                         {% if u.status == 'active' %}
-                        <span class="badge badge-success">Active</span>
+                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-primary-container/10 text-primary-container text-[10px] font-bold border border-primary-container/20 uppercase">
+                            <span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse shadow-[0_0_6px_#c8f050]"></span> Active
+                        </span>
                         {% elif u.status == 'pending' %}
-                        <span class="badge badge-warning">Pending</span>
+                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-secondary-container/20 text-secondary text-[10px] font-bold border border-secondary/20 uppercase">
+                            <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Pending
+                        </span>
                         {% elif u.status == 'inactive' %}
-                        <span class="badge badge-danger">Inactive</span>
+                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-error-container/10 text-error text-[10px] font-bold border border-error-container/20 uppercase">
+                            <span class="w-1.5 h-1.5 rounded-full bg-error"></span> Inactive
+                        </span>
                         {% endif %}
                     </td>
-                    <td>{{ u.created_at | datetimeformat }}</td>
-                    <td class="text-center">
-                        <div class="action-buttons" style="justify-content:center; flex-wrap:wrap;">
+                    <td class="p-4 text-right">
+                        <div class="flex justify-end gap-2 flex-wrap">
                             {% if u.user_id != session.get('user_id') %}
                                 {% if u.status != 'active' %}
-                                <form action="{{ url_for('admin_user_action', user_id=u.user_id, action='approve') }}" method="POST" class="action-form">
-                                    <button type="submit" class="btn btn-primary" style="padding:0.3rem 0.5rem; font-size:0.65rem;">Approve</button>
+                                <form action="{{ url_for('admin_user_action', user_id=u.user_id, action='approve') }}" method="POST" class="inline">
+                                    <button type="submit" class="px-2.5 py-1 text-[10px] font-bold bg-primary-container hover:bg-primary-fixed-dim text-on-primary rounded uppercase transition-colors">Approve</button>
                                 </form>
                                 {% endif %}
 
                                 {% if u.status != 'inactive' %}
-                                <form action="{{ url_for('admin_user_action', user_id=u.user_id, action='deactivate') }}" method="POST" class="action-form">
-                                    <button type="submit" class="btn btn-danger" style="padding:0.3rem 0.5rem; font-size:0.65rem;" onclick="return confirm('Deactivate this user?');">Deactivate</button>
+                                <form action="{{ url_for('admin_user_action', user_id=u.user_id, action='deactivate') }}" method="POST" class="inline" onsubmit="return confirm('Confirm deactivation of this operator account?');">
+                                    <button type="submit" class="px-2.5 py-1 text-[10px] font-bold bg-error-container text-error rounded hover:brightness-110 uppercase transition-all">Deactivate</button>
                                 </form>
                                 {% endif %}
 
                                 {% if u.role != 'admin' %}
-                                <form action="{{ url_for('admin_user_action', user_id=u.user_id, action='make_admin') }}" method="POST" class="action-form">
-                                    <button type="submit" class="btn btn-secondary" style="padding:0.3rem 0.5rem; font-size:0.65rem;">Make Admin</button>
+                                <form action="{{ url_for('admin_user_action', user_id=u.user_id, action='make_admin') }}" method="POST" class="inline">
+                                    <button type="submit" class="px-2.5 py-1 text-[10px] font-bold bg-surface-container-highest border border-outline-variant text-on-surface hover:text-primary-container rounded uppercase transition-colors">Make Admin</button>
                                 </form>
                                 {% endif %}
 
                                 {% if u.role != 'staff' %}
-                                <form action="{{ url_for('admin_user_action', user_id=u.user_id, action='make_staff') }}" method="POST" class="action-form">
-                                    <button type="submit" class="btn btn-secondary" style="padding:0.3rem 0.5rem; font-size:0.65rem;">Make Staff</button>
+                                <form action="{{ url_for('admin_user_action', user_id=u.user_id, action='make_staff') }}" method="POST" class="inline">
+                                    <button type="submit" class="px-2.5 py-1 text-[10px] font-bold bg-surface-container-highest border border-outline-variant text-on-surface hover:text-primary-container rounded uppercase transition-colors">Make Staff</button>
                                 </form>
                                 {% endif %}
                             {% else %}
-                                <span style="font-size:0.7rem; color: var(--text-muted); font-style:italic;">You (no self-action)</span>
+                                <span class="text-[10px] text-on-surface-variant italic font-semibold">Active Session (Self)</span>
                             {% endif %}
                         </div>
                     </td>
@@ -82,9 +139,9 @@
                 {% endfor %}
             </tbody>
         </table>
+        {% else %}
+        <div class="text-center py-12 text-on-surface-variant/50">No users found in database register.</div>
+        {% endif %}
     </div>
-    {% else %}
-    <div class="empty-state">No user accounts found.</div>
-    {% endif %}
 </div>
 {% endblock %}

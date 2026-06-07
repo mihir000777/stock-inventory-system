@@ -1,83 +1,118 @@
 {% extends 'base.html' %}
 
-{% block title %}Purchases{% endblock %}
+{% block title %}Procurement Ledger | NEXUS{% block title %}{% endblock %}{% endblock %}
+{% block section_title %}Procurement{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1 class="page-title">Purchases</h1>
-    <p class="page-description">Record inbound procurement orders. Stock is automatically increased on submission.</p>
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:justify-between md:items-end gap-4 mb-8">
+    <div>
+        <h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">Procurement Ledger</h2>
+        <p class="font-body-lg text-body-lg text-on-surface-variant mt-2 max-w-xl">
+            Log inbound stock deliveries. Submitting updates will increment inventory levels automatically.
+        </p>
+    </div>
 </div>
 
-<!-- Record Purchase Form -->
-<div class="glass-panel">
-    <div class="panel-heading">Log Purchase Order</div>
-    <form action="{{ url_for('purchase') }}" method="POST">
-        <div class="form-grid">
-            <div class="form-group">
-                <label for="product_id">Product *</label>
-                <select id="product_id" name="product_id" class="form-control" required>
-                    <option value="">-- Select Product --</option>
-                    {% for p in products %}
-                    <option value="{{ p.product_id }}">{{ p.name }}</option>
-                    {% endfor %}
-                </select>
+<div class="grid grid-cols-12 gap-8">
+    <!-- Left: Procurement Form -->
+    <div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
+        <div class="bg-surface-container-low border border-outline-variant p-6 rounded-xl">
+            <div class="flex items-center gap-2 mb-6">
+                <span class="material-symbols-outlined text-primary-container">add_shopping_cart</span>
+                <h3 class="font-headline-sm text-headline-sm text-on-surface uppercase tracking-wider">Log Purchase</h3>
             </div>
-            <div class="form-group">
-                <label for="supplier_id">Supplier</label>
-                <select id="supplier_id" name="supplier_id" class="form-control">
-                    <option value="">-- Select Supplier --</option>
-                    {% for s in suppliers %}
-                    <option value="{{ s.supplier_id }}">{{ s.name }}</option>
-                    {% endfor %}
-                </select>
+            
+            <form action="{{ url_for('purchase') }}" method="POST" class="space-y-5">
+                <div class="space-y-2">
+                    <label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider block" for="product_id">Product Asset *</label>
+                    <select class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg p-3 text-on-surface font-body-md focus:ring-1 focus:ring-primary-container focus:border-primary-container transition-all outline-none appearance-none cursor-pointer" id="product_id" name="product_id" required>
+                        <option value="">-- Select Product --</option>
+                        {% for p in products %}
+                        <option value="{{ p.product_id }}">{{ p.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider block" for="supplier_id">Assigned Supplier</label>
+                    <select class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg p-3 text-on-surface font-body-md focus:ring-1 focus:ring-primary-container focus:border-primary-container transition-all outline-none appearance-none cursor-pointer" id="supplier_id" name="supplier_id">
+                        <option value="">-- None --</option>
+                        {% for s in suppliers %}
+                        <option value="{{ s.supplier_id }}">{{ s.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider block" for="quantity">Quantity *</label>
+                        <input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg p-3 text-on-surface font-body-md focus:ring-1 focus:ring-primary-container focus:border-primary-container transition-all outline-none" id="quantity" name="quantity" min="1" placeholder="1" type="number" required/>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider block" for="purchase_date">Purchase Date</label>
+                        <input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg p-3 text-on-surface font-body-md focus:ring-1 focus:ring-primary-container focus:border-primary-container transition-all outline-none cursor-pointer" id="purchase_date" name="purchase_date" type="date"/>
+                    </div>
+                </div>
+                
+                <div class="pt-4">
+                    <button class="w-full bg-primary-container text-on-primary-container font-headline-sm text-headline-sm py-4 rounded-xl font-bold shadow-[0_0_20px_rgba(200,240,80,0.15)] hover:shadow-[0_0_30px_rgba(200,240,80,0.35)] transition-all flex items-center justify-center gap-3" type="submit">
+                        Record Purchase
+                        <span class="material-symbols-outlined">verified</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Right: Ledger History Table -->
+    <div class="col-span-12 lg:col-span-8">
+        <div class="bg-surface-container-low border border-outline-variant rounded-xl overflow-hidden flex flex-col p-6">
+            <div class="flex items-center justify-between border-b border-outline-variant/30 pb-4 mb-4">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-secondary">history_edu</span>
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface uppercase tracking-wider">Purchase History</h3>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="quantity">Quantity *</label>
-                <input type="number" id="quantity" name="quantity" min="1" class="form-control" placeholder="1" required>
-            </div>
-            <div class="form-group">
-                <label for="purchase_date">Date</label>
-                <input type="date" id="purchase_date" name="purchase_date" class="form-control">
-            </div>
-            <div class="form-group" style="display:flex; align-items:flex-end;">
-                <button type="submit" class="btn btn-primary" style="width:100%;">Record Purchase</button>
+            
+            <div class="overflow-x-auto w-full">
+                {% if purchases %}
+                <table class="w-full text-left border-collapse font-body-md text-xs">
+                    <thead>
+                        <tr class="bg-surface-container-lowest/50 text-on-surface-variant uppercase font-label-sm">
+                            <th class="p-3 border-b border-outline-variant/30">ID</th>
+                            <th class="p-3 border-b border-outline-variant/30">Product</th>
+                            <th class="p-3 border-b border-outline-variant/30 text-center">Quantity</th>
+                            <th class="p-3 border-b border-outline-variant/30">Supplier</th>
+                            <th class="p-3 border-b border-outline-variant/30">Authorized By</th>
+                            <th class="p-3 border-b border-outline-variant/30 text-right">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-outline-variant/20">
+                        {% for p in purchases %}
+                        <tr class="hover:bg-surface-container-high transition-colors group">
+                            <td class="p-3 border-b border-outline-variant/10 font-bold text-on-surface-variant">#{{ p.purchase_id }}</td>
+                            <td class="p-3 border-b border-outline-variant/10 text-on-surface font-semibold">{{ p.product_name or 'N/A' }}</td>
+                            <td class="p-3 border-b border-outline-variant/10 text-center text-primary-container font-bold font-label-md">+{{ p.quantity }}</td>
+                            <td class="p-3 border-b border-outline-variant/10 text-on-surface-variant">{{ p.supplier_name or 'None' }}</td>
+                            <td class="p-3 border-b border-outline-variant/10 text-on-surface-variant">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-secondary-container/30 flex items-center justify-center text-[9px] font-bold text-on-secondary-container">
+                                        {{ (p.employee_name or 'System')[0] | uppercase }}
+                                    </div>
+                                    <span>{{ p.employee_name or 'System' }}</span>
+                                </div>
+                            </td>
+                            <td class="p-3 border-b border-outline-variant/10 text-right text-on-surface-variant font-label-sm">{{ p.purchase_date | dateformat }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="text-center py-12 text-on-surface-variant/50">No inbound procurement records logged yet.</div>
+                {% endif %}
             </div>
         </div>
-    </form>
-</div>
-
-<!-- Purchase History -->
-<div class="glass-panel">
-    <div class="panel-heading">Purchase History</div>
-    {% if purchases %}
-    <div class="table-responsive">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Product</th>
-                    <th>Supplier</th>
-                    <th class="text-center">Quantity</th>
-                    <th>Logged By</th>
-                    <th>Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for p in purchases %}
-                <tr>
-                    <td>#{{ p.purchase_id }}</td>
-                    <td style="color: var(--text-color);">{{ p.product_name or 'N/A' }}</td>
-                    <td>{{ p.supplier_name or 'N/A' }}</td>
-                    <td class="text-center" style="color: var(--accent-green); font-weight:500;">+{{ p.quantity }}</td>
-                    <td>{{ p.employee_name or 'System' }}</td>
-                    <td>{{ p.purchase_date | dateformat }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
     </div>
-    {% else %}
-    <div class="empty-state">No procurement records yet.</div>
-    {% endif %}
 </div>
 {% endblock %}

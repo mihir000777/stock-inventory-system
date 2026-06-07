@@ -1,83 +1,120 @@
 {% extends 'base.html' %}
 
-{% block title %}Sales{% endblock %}
+{% block title %}Sales Terminal | NEXUS{% endblock %}
+{% block section_title %}Sales{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1 class="page-title">Sales</h1>
-    <p class="page-description">Record outbound sales. Stock will decrease automatically. Insufficient stock will be rejected.</p>
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:justify-between md:items-end gap-4 mb-8">
+    <div>
+        <h2 class="font-headline-lg text-headline-lg text-on-surface">Sales <span class="text-primary-container">Terminal</span></h2>
+        <p class="text-on-surface-variant font-body-md mt-1">Real-time inventory depletion and transaction processing.</p>
+    </div>
 </div>
 
-<!-- Record Sale Form -->
-<div class="glass-panel">
-    <div class="panel-heading">Checkout Sale Order</div>
-    <form action="{{ url_for('sale') }}" method="POST">
-        <div class="form-grid">
-            <div class="form-group">
-                <label for="product_id">Product *</label>
-                <select id="product_id" name="product_id" class="form-control" required>
-                    <option value="">-- Select Product --</option>
-                    {% for p in products %}
-                    <option value="{{ p.product_id }}">{{ p.name }} ({{ p.quantity }} available)</option>
-                    {% endfor %}
-                </select>
+<div class="grid grid-cols-12 gap-8">
+    <!-- Left: Checkout Form -->
+    <div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
+        <div class="bg-surface-container-low border border-outline-variant p-6 rounded-xl relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-primary-container/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+            <h3 class="font-headline-sm text-headline-sm mb-6 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+                New Transaction
+            </h3>
+            
+            <form action="{{ url_for('sale') }}" method="POST" class="space-y-5">
+                <!-- Product Selection -->
+                <div class="space-y-2">
+                    <label class="font-label-md text-on-surface-variant uppercase mb-2 block" for="product_id">Product Asset *</label>
+                    <select class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl p-3 text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container/30 transition-all appearance-none cursor-pointer" id="product_id" name="product_id" required>
+                        <option value="">-- Select Product --</option>
+                        {% for p in products %}
+                        <option value="{{ p.product_id }}">{{ p.name }} ({{ p.quantity }} available)</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Customer Lookup -->
+                <div class="space-y-2">
+                    <label class="font-label-md text-on-surface-variant uppercase mb-2 block" for="customer_id">Customer Account</label>
+                    <select class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl p-3 text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container/30 transition-all appearance-none cursor-pointer" id="customer_id" name="customer_id">
+                        <option value="">-- Walk-in Customer --</option>
+                        {% for c in customers %}
+                        <option value="{{ c.customer_id }}">{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Qty and Date -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="font-label-md text-on-surface-variant uppercase mb-2 block" for="qty_sold">Quantity *</label>
+                        <input class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl p-3 text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container/30 transition-all" id="qty_sold" name="qty_sold" min="1" placeholder="1" type="number" required/>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="font-label-md text-on-surface-variant uppercase mb-2 block" for="sales_date">Transaction Date</label>
+                        <input class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl p-3 text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container/30 transition-all cursor-pointer" id="sales_date" name="sales_date" type="date"/>
+                    </div>
+                </div>
+                
+                <div class="pt-4">
+                    <button class="w-full py-4 bg-primary-container text-on-primary font-bold rounded-xl shadow-[0_0_20px_rgba(200,240,80,0.15)] hover:shadow-[0_0_30px_rgba(200,240,80,0.25)] transition-all active:scale-[0.98] flex items-center justify-center gap-3" type="submit">
+                        <span class="material-symbols-outlined">shopping_cart_checkout</span>
+                        Execute Sale
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Right: Sales Ledger History Table -->
+    <div class="col-span-12 lg:col-span-8">
+        <div class="bg-surface-container-low border border-outline-variant rounded-xl overflow-hidden flex flex-col p-6">
+            <div class="flex items-center justify-between border-b border-outline-variant/30 pb-4 mb-4">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary-container">history_edu</span>
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface uppercase tracking-wider">Transaction Ledger</h3>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="qty_sold">Quantity *</label>
-                <input type="number" id="qty_sold" name="qty_sold" min="1" class="form-control" placeholder="1" required>
-            </div>
-            <div class="form-group">
-                <label for="customer_id">Customer</label>
-                <select id="customer_id" name="customer_id" class="form-control">
-                    <option value="">-- Walk-in --</option>
-                    {% for c in customers %}
-                    <option value="{{ c.customer_id }}">{{ c.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="sales_date">Date</label>
-                <input type="date" id="sales_date" name="sales_date" class="form-control">
-            </div>
-            <div class="form-group" style="display:flex; align-items:flex-end;">
-                <button type="submit" class="btn btn-primary" style="width:100%;">Record Sale</button>
+            
+            <div class="overflow-x-auto w-full">
+                {% if sales %}
+                <table class="w-full text-left border-collapse font-body-md text-xs">
+                    <thead>
+                        <tr class="bg-surface-container-lowest/50 text-on-surface-variant uppercase font-label-sm">
+                            <th class="p-3 border-b border-outline-variant/30">ID</th>
+                            <th class="p-3 border-b border-outline-variant/30">Product</th>
+                            <th class="p-3 border-b border-outline-variant/30 text-center">Qty Sold</th>
+                            <th class="p-3 border-b border-outline-variant/30">Customer</th>
+                            <th class="p-3 border-b border-outline-variant/30">Logged By</th>
+                            <th class="p-3 border-b border-outline-variant/30 text-right">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-outline-variant/20">
+                        {% for s in sales %}
+                        <tr class="hover:bg-surface-container-high transition-colors group">
+                            <td class="p-3 border-b border-outline-variant/10 font-bold text-on-surface-variant">#{{ s.sales_id }}</td>
+                            <td class="p-3 border-b border-outline-variant/10 text-on-surface font-semibold">{{ s.product_name or 'N/A' }}</td>
+                            <td class="p-3 border-b border-outline-variant/10 text-center text-error font-bold font-label-md">-{{ s.qty_sold }}</td>
+                            <td class="p-3 border-b border-outline-variant/10 text-on-surface-variant">{{ s.customer_name or 'Walk-in' }}</td>
+                            <td class="p-3 border-b border-outline-variant/10 text-on-surface-variant">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-secondary-container/30 flex items-center justify-center text-[9px] font-bold text-on-secondary-container">
+                                        {{ (s.employee_name or 'System')[0] | uppercase }}
+                                    </div>
+                                    <span>{{ s.employee_name or 'System' }}</span>
+                                </div>
+                            </td>
+                            <td class="p-3 border-b border-outline-variant/10 text-right text-on-surface-variant font-label-sm">{{ s.sales_date | dateformat }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="text-center py-12 text-on-surface-variant/50">No sales transactions logged in ledger yet.</div>
+                {% endif %}
             </div>
         </div>
-    </form>
-</div>
-
-<!-- Sales History -->
-<div class="glass-panel">
-    <div class="panel-heading">Sales Ledger</div>
-    {% if sales %}
-    <div class="table-responsive">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Product</th>
-                    <th class="text-center">Qty Sold</th>
-                    <th>Customer</th>
-                    <th>Employee</th>
-                    <th>Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for s in sales %}
-                <tr>
-                    <td>#{{ s.sales_id }}</td>
-                    <td style="color: var(--text-color);">{{ s.product_name or 'N/A' }}</td>
-                    <td class="text-center" style="color: var(--danger); font-weight:500;">-{{ s.qty_sold }}</td>
-                    <td>{{ s.customer_name or 'Walk-in' }}</td>
-                    <td>{{ s.employee_name or 'System' }}</td>
-                    <td>{{ s.sales_date | dateformat }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
     </div>
-    {% else %}
-    <div class="empty-state">No sales records yet.</div>
-    {% endif %}
 </div>
 {% endblock %}

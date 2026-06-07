@@ -1,577 +1,307 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}NEXUS.{% endblock %}</title>
-    <!-- Google Fonts: Syne and DM Mono -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-    
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>{% block title %}NEXUS | Command Center{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+              "on-surface": "#e4e1eb",
+              "on-secondary-container": "#b4abff",
+              "on-tertiary": "#303036",
+              "tertiary-fixed-dim": "#c8c5cd",
+              "on-tertiary-fixed": "#1b1b20",
+              "primary-container": "#c8f050",
+              "tertiary-container": "#e3e0e8",
+              "surface-bright": "#393840",
+              "outline-variant": "#444936",
+              "inverse-on-surface": "#303037",
+              "on-secondary-fixed-variant": "#3f29bc",
+              "on-tertiary-fixed-variant": "#47464c",
+              "secondary": "#c6bfff",
+              "on-background": "#e4e1eb",
+              "on-surface-variant": "#c5c9b0",
+              "outline": "#8f937c",
+              "surface-container-low": "#1b1b22",
+              "secondary-container": "#3f29bc",
+              "on-tertiary-container": "#646369",
+              "surface-container-lowest": "#0e0e14",
+              "tertiary": "#fffdff",
+              "surface-container-high": "#2a2931",
+              "on-primary-fixed": "#161f00",
+              "surface-dim": "#13131a",
+              "inverse-primary": "#506600",
+              "primary-fixed-dim": "#aed536",
+              "on-primary-fixed-variant": "#3c4d00",
+              "surface-variant": "#34343c",
+              "on-secondary-fixed": "#160066",
+              "surface": "#13131a",
+              "inverse-surface": "#e4e1eb",
+              "error": "#ffb4ab",
+              "tertiary-fixed": "#e4e1e9",
+              "on-error-container": "#ffdad6",
+              "secondary-fixed": "#e4dfff",
+              "primary": "#feffed",
+              "surface-container-highest": "#34343c",
+              "on-error": "#690005",
+              "primary-fixed": "#c9f251",
+              "error-container": "#93000a",
+              "background": "#0a0a0f",
+              "on-secondary": "#2800a0",
+              "on-primary": "#283500",
+              "secondary-fixed-dim": "#c6bfff",
+              "on-primary-container": "#546c00",
+              "surface-container": "#1f1f26",
+              "surface-tint": "#aed536"
+            },
+            "borderRadius": {
+              "DEFAULT": "0.125rem",
+              "lg": "0.25rem",
+              "xl": "0.5rem",
+              "full": "0.75rem"
+            },
+            "fontFamily": {
+              "headline-lg": ["Syne"],
+              "label-md": ["JetBrains Mono"],
+              "headline-sm": ["Syne"],
+              "headline-md": ["Syne"],
+              "display-lg": ["Syne"],
+              "body-lg": ["JetBrains Mono"],
+              "label-sm": ["JetBrains Mono"],
+              "body-md": ["JetBrains Mono"]
+            },
+            "fontSize": {
+              "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+              "label-md": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500"}],
+              "headline-sm": ["20px", {"lineHeight": "1.3", "fontWeight": "600"}],
+              "headline-md": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+              "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+              "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+              "label-sm": ["10px", {"lineHeight": "1", "fontWeight": "500"}],
+              "body-md": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
     <style>
-        /* CSS Reset and Variables */
-        :root {
-            --bg-color: #0a0a0f;
-            --surface: #111118;
-            --surface-2: #18181f;
-            --accent-green: #c8f050;
-            --accent-purple: #7c6dfa;
-            --danger: #ff4d6d;
-            --warning: #ffb830;
-            --text-color: #ffffff;
-            --text-muted: #88888e;
-            --border: 1px solid #ffffff12;
-            --font-heading: 'Syne', sans-serif;
-            --font-body: 'DM Mono', monospace;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: var(--font-body);
-            min-height: 100vh;
-            display: flex;
-        }
-
-        /* Sidebar Navigation */
-        .sidebar {
-            width: 200px;
-            background-color: var(--surface);
-            border-right: var(--border);
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 2rem 1.2rem;
-            z-index: 100;
-        }
-
-        .logo {
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 2.2rem;
-            color: var(--text-color);
-            letter-spacing: -1.5px;
-            margin-bottom: 2rem;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .logo span {
-            color: var(--accent-green);
-        }
-
-        .nav-links {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 0.6rem;
-        }
-
-        .nav-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            font-family: var(--font-heading);
-            font-weight: 700;
-            display: block;
-            padding: 0.6rem 0.8rem;
-            border: 1px solid transparent;
-            border-radius: 4px;
-            transition: all 0.2s ease;
-        }
-
-        .nav-links a:hover, .nav-links a.active {
-            color: var(--text-color);
-            background-color: var(--surface-2);
-            border: var(--border);
-        }
-
-        .nav-links a.active {
-            border-left: 3px solid var(--accent-green);
-        }
-
-        .sidebar-section-title {
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin: 1.5rem 0 0.5rem 0.8rem;
-            font-weight: 600;
-        }
-
-        /* User Info Section in Sidebar */
-        .user-info {
-            border-top: var(--border);
-            padding-top: 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-        }
-
-        .user-name {
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: var(--text-color);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .role-pill {
-            display: inline-block;
-            font-size: 0.6rem;
-            text-transform: uppercase;
-            font-family: var(--font-heading);
-            font-weight: 800;
-            padding: 0.15rem 0.4rem;
-            border-radius: 4px;
-            width: fit-content;
-        }
-
-        .role-pill.admin {
-            background-color: var(--accent-purple);
-            color: #ffffff;
-        }
-
-        .role-pill.staff {
-            background-color: var(--surface-2);
-            color: var(--accent-green);
-            border: var(--border);
-        }
-
-        .logout-link {
-            font-family: var(--font-heading);
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--danger);
-            text-decoration: none;
-            text-transform: uppercase;
-            margin-top: 0.4rem;
-            display: inline-block;
-            transition: opacity 0.2s;
-        }
-
-        .logout-link:hover {
-            opacity: 0.8;
-        }
-
-        /* Main Content Wrapper */
-        .content-wrapper {
-            margin-left: 200px;
-            width: calc(100% - 200px);
-            padding: 2.5rem;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* Form styling */
-        .glass-panel {
-            background-color: var(--surface);
-            border: var(--border);
-            border-radius: 4px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .panel-heading {
-            font-family: var(--font-heading);
-            font-weight: 700;
-            font-size: 1.1rem;
-            text-transform: uppercase;
-            margin-bottom: 1.25rem;
-            letter-spacing: 0.5px;
-            color: var(--text-color);
-            border-bottom: var(--border);
-            padding-bottom: 0.6rem;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.2rem;
-            align-items: flex-end;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-        }
-
-        .form-group label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-weight: 500;
-        }
-
-        .form-control {
-            background-color: var(--surface-2);
-            border: var(--border);
-            border-radius: 4px;
-            color: var(--text-color);
-            font-family: var(--font-body);
-            font-size: 0.85rem;
-            padding: 0.6rem 0.8rem;
-            width: 100%;
-            transition: border-color 0.2s;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--accent-green);
-        }
-
-        select.form-control {
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2388888e'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 0.75rem center;
-            background-size: 0.8rem;
-            padding-right: 2rem;
-        }
-
-        /* Buttons */
-        .btn {
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            padding: 0.65rem 1.2rem;
-            border: none;
-            border-radius: 0px; /* No radius */
-            cursor: pointer;
-            transition: opacity 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-        }
-
-        .btn-primary {
-            background-color: var(--accent-green);
-            color: #000000;
-        }
-
-        .btn-primary:hover {
-            opacity: 0.9;
-        }
-
-        .btn-danger {
-            background-color: var(--danger);
-            color: #ffffff;
-        }
-
-        .btn-danger:hover {
-            opacity: 0.9;
-        }
-
-        .btn-secondary {
-            background-color: var(--surface-2);
-            color: var(--text-color);
-            border: var(--border);
-        }
-
-        .btn-secondary:hover {
-            background-color: var(--surface);
-        }
-
-        .btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        /* Tables */
-        .table-responsive {
-            overflow-x: auto;
-            width: 100%;
-            border: var(--border);
-            border-radius: 4px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 0.85rem;
-            background-color: var(--surface);
-        }
-
-        th {
-            background-color: var(--surface-2);
-            color: var(--text-color);
-            font-family: var(--font-heading);
-            font-weight: 700;
-            padding: 0.75rem 1rem;
-            border-bottom: var(--border);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        td {
-            padding: 0.75rem 1rem;
-            border-bottom: var(--border);
-            color: var(--text-muted);
-            vertical-align: middle;
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        tr:hover td {
-            background-color: rgba(255, 255, 255, 0.01);
-            color: var(--text-color);
-        }
-
-        /* Badges */
-        .badge {
-            display: inline-block;
-            font-size: 0.6rem;
-            font-weight: 800;
-            font-family: var(--font-heading);
-            text-transform: uppercase;
-            padding: 0.15rem 0.4rem;
-            border-radius: 4px;
-        }
-
-        .badge-danger {
-            background-color: rgba(255, 77, 109, 0.15);
-            color: var(--danger);
-            border: 1px solid rgba(255, 77, 109, 0.3);
-        }
-
-        .badge-success {
-            background-color: rgba(200, 240, 80, 0.15);
-            color: var(--accent-green);
-            border: 1px solid rgba(200, 240, 80, 0.3);
-        }
-
-        .badge-warning {
-            background-color: rgba(255, 184, 48, 0.15);
-            color: var(--warning);
-            border: 1px solid rgba(255, 184, 48, 0.3);
-        }
-
-        .badge-info {
-            background-color: rgba(124, 109, 250, 0.15);
-            color: var(--accent-purple);
-            border: 1px solid rgba(124, 109, 250, 0.3);
-        }
-
-        /* Flash Messages */
-        .flash-container {
-            margin-bottom: 1.5rem;
-        }
-
-        .alert {
-            padding: 0.8rem 1rem;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 0.6rem;
-            border: var(--border);
-        }
-
-        .alert-success {
-            background-color: rgba(200, 240, 80, 0.1);
-            color: var(--accent-green);
-            border-color: rgba(200, 240, 80, 0.2);
-        }
-
-        .alert-danger {
-            background-color: rgba(255, 77, 109, 0.1);
-            color: var(--danger);
-            border-color: rgba(255, 77, 109, 0.2);
-        }
-
-        .alert-warning {
-            background-color: rgba(255, 184, 48, 0.1);
-            color: var(--warning);
-            border-color: rgba(255, 184, 48, 0.2);
-        }
-
-        .alert-close {
-            background: none;
-            border: none;
-            color: inherit;
-            cursor: pointer;
-            font-size: 1.1rem;
-            line-height: 1;
-            opacity: 0.6;
-        }
-
-        .alert-close:hover {
-            opacity: 1;
-        }
-
-        /* Common Page Layouts */
-        .page-header {
-            margin-bottom: 2rem;
-            border-bottom: var(--border);
-            padding-bottom: 1rem;
-        }
-
-        .page-title {
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 1.8rem;
-            text-transform: uppercase;
-            color: var(--text-color);
-            letter-spacing: -0.5px;
-        }
-
-        .page-description {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-top: 0.2rem;
-        }
-
-        /* Stats Blocks */
-        .dashboard-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background-color: var(--surface);
-            border: var(--border);
-            border-radius: 4px;
-            padding: 1.5rem;
-        }
-
-        .stat-label {
-            font-family: var(--font-heading);
-            font-weight: 700;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-number {
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 2.25rem;
-            color: var(--accent-green);
-            line-height: 1.1;
-        }
-
-        .stat-number.danger {
-            color: var(--danger);
-        }
-
-        .stat-subtext {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            margin-top: 0.4rem;
-        }
-
-        /* Helpers */
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
-        .font-semibold { font-weight: 500; }
-        
-        .empty-state {
-            text-align: center;
-            padding: 2.5rem 1rem;
-            color: var(--text-muted);
-        }
-
-        .highlight-row-danger {
-            background-color: rgba(255, 77, 109, 0.04) !important;
-        }
-
-        .highlight-row-danger td {
-            color: var(--danger) !important;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 0.4rem;
-        }
-        
-        .action-form {
-            display: inline-block;
-        }
-
-        /* Print styling */
-        @media print {
-            .sidebar { display: none !important; }
-            .content-wrapper { margin-left: 0 !important; width: 100% !important; padding: 0 !important; }
-            .glass-panel form, .btn { display: none !important; }
-            th, td { border-bottom: 1px solid #000 !important; color: #000 !important; }
-            body { background: #fff !important; color: #000 !important; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0f; }
+        ::-webkit-scrollbar-thumb { background: #34343c; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #c8f050; }
+        .neon-glow {
+            box-shadow: 0 0 12px rgba(200, 240, 80, 0.15);
         }
     </style>
 </head>
-<body>
-    <div class="sidebar">
-        <div>
-            <a href="{{ url_for('dashboard') }}" class="logo">NEXUS<span>.</span></a>
-            <ul class="nav-links">
-                <li><a href="{{ url_for('dashboard') }}" class="{% if request.path == '/' %}active{% endif %}">Dashboard</a></li>
-                <li><a href="{{ url_for('products') }}" class="{% if request.path == '/products' %}active{% endif %}">Products</a></li>
-                <li><a href="{{ url_for('purchase') }}" class="{% if request.path == '/purchase' %}active{% endif %}">Purchases</a></li>
-                <li><a href="{{ url_for('sale') }}" class="{% if request.path == '/sale' %}active{% endif %}">Sales</a></li>
-                
-                {% if session.get('role') == 'admin' %}
-                <div class="sidebar-section-title">Directory</div>
-                <li><a href="{{ url_for('suppliers') }}" class="{% if request.path == '/suppliers' %}active{% endif %}">Suppliers</a></li>
-                <li><a href="{{ url_for('employees') }}" class="{% if request.path == '/employees' %}active{% endif %}">Employees</a></li>
-                <li><a href="{{ url_for('customers') }}" class="{% if request.path == '/customers' %}active{% endif %}">Customers</a></li>
-                
-                <div class="sidebar-section-title">Admin</div>
-                <li><a href="{{ url_for('report') }}" class="{% if request.path == '/report' %}active{% endif %}">Report</a></li>
-                <li><a href="{{ url_for('admin_panel') }}" class="{% if request.path == '/admin' %}active{% endif %}">Admin Panel</a></li>
-                {% endif %}
-            </ul>
-        </div>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-container selection:text-on-primary-container overflow-x-hidden min-h-screen flex flex-col">
 
-        <div class="user-info">
-            <span class="user-name">{{ session.get('name', 'Operator') }}</span>
-            <span class="role-pill {{ session.get('role', 'staff') }}">
-                {{ session.get('role', 'staff') }}
-            </span>
-            <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
-        </div>
-    </div>
-
-    <div class="content-wrapper">
-        <div class="flash-container">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">
-                            <span>{{ message }}</span>
-                            <button class="alert-close" onclick="this.parentElement.style.display='none';">&times;</button>
+    <!-- Global Success Alert Banner -->
+    <div class="fixed top-0 left-0 md:left-[200px] right-0 z-50 flex flex-col gap-1 pointer-events-none">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert-banner pointer-events-auto bg-{% if category == 'success' %}primary-container text-on-primary-container{% elif category in ['danger', 'error'] %}error-container text-on-error-container{% else %}secondary-container text-on-secondary-container{% endif %} py-2.5 px-6 flex items-center justify-between transition-all duration-500 border-b border-outline-variant/30 w-full" id="alert-banner-{{ loop.index }}">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-[18px]">
+                                {% if category == 'success' %}check_circle{% elif category in ['danger', 'error'] %}warning{% else %}info{% endif %}
+                            </span>
+                            <p class="font-label-md text-label-md uppercase tracking-wider">{{ message }}</p>
                         </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-        </div>
-
-        {% block content %}{% endblock %}
+                        <button class="hover:bg-black/10 dark:hover:bg-white/10 p-1 rounded-full transition-colors" onclick="document.getElementById('alert-banner-{{ loop.index }}').remove()">
+                            <span class="material-symbols-outlined text-[18px]">close</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
     </div>
+
+    <!-- Side Navigation Bar (Desktop Only) -->
+    <aside class="fixed left-0 top-0 h-full w-[200px] border-r border-outline-variant bg-surface-container-low md:flex hidden flex-col py-6 z-40">
+        <div class="px-6 mb-8">
+            <h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tighter after:content-['●'] after:ml-1 after:text-primary-container after:animate-pulse">NEXUS</h1>
+            <p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Terminal Controls</p>
+        </div>
+        <nav class="flex-1 space-y-1 overflow-y-auto">
+            <a class="flex items-center gap-3 px-4 py-3 {% if request.path == '/' %}text-primary bg-secondary-container/20 border-r-2 border-primary shadow-[0_0_12px_rgba(200,240,80,0.1)]{% else %}text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high{% endif %} transition-all duration-200" href="{{ url_for('dashboard') }}">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if request.path == '/' %}1{% else %}0{% endif %};">dashboard</span>
+                <span class="font-label-md text-label-md">Dashboard</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 {% if request.path.startswith('/products') %}text-primary bg-secondary-container/20 border-r-2 border-primary shadow-[0_0_12px_rgba(200,240,80,0.1)]{% else %}text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high{% endif %} transition-all duration-200" href="{{ url_for('products') }}">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if request.path.startswith('/products') %}1{% else %}0{% endif %};">inventory_2</span>
+                <span class="font-label-md text-label-md">Products</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 {% if request.path.startswith('/purchase') %}text-primary bg-secondary-container/20 border-r-2 border-primary shadow-[0_0_12px_rgba(200,240,80,0.1)]{% else %}text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high{% endif %} transition-all duration-200" href="{{ url_for('purchase') }}">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if request.path.startswith('/purchase') %}1{% else %}0{% endif %};">shopping_cart</span>
+                <span class="font-label-md text-label-md">Purchases</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 {% if request.path.startswith('/sale') %}text-primary bg-secondary-container/20 border-r-2 border-primary shadow-[0_0_12px_rgba(200,240,80,0.1)]{% else %}text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high{% endif %} transition-all duration-200" href="{{ url_for('sale') }}">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if request.path.startswith('/sale') %}1{% else %}0{% endif %};">sell</span>
+                <span class="font-label-md text-label-md">Sales</span>
+            </a>
+
+            {% if session.get('role') == 'admin' %}
+            <div class="px-6 py-2 text-[10px] font-label-sm text-on-surface-variant uppercase tracking-widest border-t border-outline-variant/30 mt-4">Registry</div>
+            
+            <a class="flex items-center gap-3 px-4 py-3.5 {% if request.path.startswith('/suppliers') %}text-primary bg-secondary-container/20 border-r-2 border-primary shadow-[0_0_12px_rgba(200,240,80,0.1)]{% else %}text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high{% endif %} transition-all duration-200" href="{{ url_for('suppliers') }}">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if request.path.startswith('/suppliers') %}1{% else %}0{% endif %};">factory</span>
+                <span class="font-label-md text-label-md">Suppliers</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3.5 {% if request.path.startswith('/employees') %}text-primary bg-secondary-container/20 border-r-2 border-primary shadow-[0_0_12px_rgba(200,240,80,0.1)]{% else %}text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high{% endif %} transition-all duration-200" href="{{ url_for('employees') }}">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if request.path.startswith('/employees') %}1{% else %}0{% endif %};">badge</span>
+                <span class="font-label-md text-label-md">Employees</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3.5 {% if request.path.startswith('/customers') %}text-primary bg-secondary-container/20 border-r-2 border-primary shadow-[0_0_12px_rgba(200,240,80,0.1)]{% else %}text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high{% endif %} transition-all duration-200" href="{{ url_for('customers') }}">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if request.path.startswith('/customers') %}1{% else %}0{% endif %};">group</span>
+                <span class="font-label-md text-label-md">Customers</span>
+            </a>
+
+            <div class="px-6 py-2 text-[10px] font-label-sm text-on-surface-variant uppercase tracking-widest border-t border-outline-variant/30 mt-4 font-semibold">Admin Panel</div>
+            
+            <a class="flex items-center gap-3 px-4 py-3.5 {% if request.path.startswith('/report') %}text-primary bg-secondary-container/20 border-r-2 border-primary shadow-[0_0_12px_rgba(200,240,80,0.1)]{% else %}text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high{% endif %} transition-all duration-200" href="{{ url_for('report') }}">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if request.path.startswith('/report') %}1{% else %}0{% endif %};">analytics</span>
+                <span class="font-label-md text-label-md">Report</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3.5 {% if request.path.startswith('/admin') %}text-primary bg-secondary-container/20 border-r-2 border-primary shadow-[0_0_12px_rgba(200,240,80,0.1)]{% else %}text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high{% endif %} transition-all duration-200" href="{{ url_for('admin_panel') }}">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if request.path.startswith('/admin') %}1{% else %}0{% endif %};">admin_panel_settings</span>
+                <span class="font-label-md text-label-md">Admin Panel</span>
+            </a>
+            {% endif %}
+        </nav>
+        
+        <div class="px-4 mt-auto space-y-1">
+            <a class="flex items-center gap-3 px-4 py-3.5 text-error hover:brightness-125 transition-colors" href="{{ url_for('logout') }}">
+                <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">logout</span>
+                <span class="font-label-md text-label-md">Sign Out</span>
+            </a>
+            <div class="pt-4 border-t border-outline-variant/30 flex items-center gap-3 px-2">
+                <div class="relative flex-shrink-0">
+                    <div class="w-8 h-8 rounded-full border border-primary-container bg-surface-container-high flex items-center justify-center font-bold text-primary text-sm uppercase">
+                        {{ session.get('name', 'O')[0] }}
+                    </div>
+                    <div class="absolute bottom-0 right-0 w-2 h-2 bg-primary-container rounded-full border border-background"></div>
+                </div>
+                <div class="overflow-hidden">
+                    <p class="font-label-md text-label-md truncate">{{ session.get('name', 'Operator') }}</p>
+                    <p class="text-[9px] text-on-surface-variant uppercase tracking-widest font-bold">{{ session.get('role', 'staff') }}</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Top AppBar (Sticky) -->
+    <header class="sticky top-0 z-30 md:ml-[200px] h-16 bg-background/80 backdrop-blur-md border-b border-outline-variant flex justify-between items-center px-4 md:px-8">
+        <div class="flex items-center gap-4 md:gap-8 flex-1">
+            <!-- Mobile Toggle Placeholder (simply layout helper) -->
+            <div class="flex items-center gap-2 md:hidden">
+                <span class="font-headline-sm text-headline-sm font-black text-primary tracking-tighter">NEXUS</span>
+                <div class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse shadow-[0_0_8px_#c8f050]"></div>
+            </div>
+
+            <div class="relative group hidden md:block">
+                <span class="absolute inset-y-0 left-3 flex items-center text-on-surface-variant group-focus-within:text-primary">
+                    <span class="material-symbols-outlined text-[20px]">search</span>
+                </span>
+                <input class="bg-surface-container-low border border-outline-variant rounded-xl pl-10 pr-4 py-2 text-body-md font-body-md w-64 focus:ring-1 focus:ring-primary-container focus:border-primary-container outline-none transition-all placeholder:text-on-surface-variant/40" placeholder="SKU Lookup..." type="text" id="global-search"/>
+            </div>
+            
+            <nav class="hidden lg:flex gap-6">
+                <a class="text-primary border-b border-primary pb-1 font-label-md text-label-md" href="#">System Base</a>
+                <span class="text-on-surface-variant/40">/</span>
+                <span class="text-on-surface font-label-md text-label-md uppercase tracking-wider">{% block section_title %}Node 01{% endblock %}</span>
+            </nav>
+        </div>
+        <div class="flex items-center gap-3 md:gap-4">
+            <button class="text-on-surface-variant hover:bg-surface-container-high p-2 rounded-xl transition-all relative">
+                <span class="material-symbols-outlined">notifications</span>
+                <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-primary-container rounded-full ring-2 ring-background"></span>
+            </button>
+            <div class="h-6 w-px bg-outline-variant"></div>
+            
+            <!-- Quick Role Info Mobile -->
+            <div class="md:hidden flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full border border-primary-container bg-surface-container-high flex items-center justify-center font-bold text-primary text-xs uppercase">
+                    {{ session.get('name', 'O')[0] }}
+                </div>
+            </div>
+            
+            <span class="hidden md:inline-block border border-outline px-4 py-1.5 rounded-lg text-label-md font-label-md text-on-surface-variant hover:bg-surface-container-high transition-all cursor-pointer">
+                NODE_SECURE
+            </span>
+        </div>
+    </header>
+
+    <!-- Content Canvas -->
+    <main class="flex-1 pt-6 pb-24 md:pb-8 px-4 md:px-8 md:ml-[200px] max-w-full overflow-hidden">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Bottom Navigation Bar (Mobile Only) -->
+    <nav class="fixed bottom-0 left-0 right-0 z-50 h-20 bg-surface-container-low/95 backdrop-blur-lg flex items-center justify-around px-2 pb-2 md:hidden border-t border-outline-variant">
+        <a class="flex flex-col items-center gap-1 w-1/5 {% if request.path == '/' %}text-primary{% else %}text-on-surface-variant{% endif %}" href="{{ url_for('dashboard') }}">
+            <div class="p-2 rounded-xl {% if request.path == '/' %}bg-secondary-container/20 border-t border-primary shadow-[0_0_8px_rgba(200,240,80,0.15)]{% endif %}">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if request.path == '/' %}1{% else %}0{% endif %};">dashboard</span>
+            </div>
+            <span class="text-[9px] font-label-sm uppercase tracking-tighter">Dash</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 w-1/5 {% if request.path.startswith('/products') %}text-primary{% else %}text-on-surface-variant{% endif %}" href="{{ url_for('products') }}">
+            <div class="p-2 rounded-xl {% if request.path.startswith('/products') %}bg-secondary-container/20 border-t border-primary shadow-[0_0_8px_rgba(200,240,80,0.15)]{% endif %}">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if request.path.startswith('/products') %}1{% else %}0{% endif %};">inventory_2</span>
+            </div>
+            <span class="text-[9px] font-label-sm uppercase tracking-tighter">Inv</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 w-1/5 {% if request.path.startswith('/purchase') %}text-primary{% else %}text-on-surface-variant{% endif %}" href="{{ url_for('purchase') }}">
+            <div class="p-2 rounded-xl {% if request.path.startswith('/purchase') %}bg-secondary-container/20 border-t border-primary shadow-[0_0_8px_rgba(200,240,80,0.15)]{% endif %}">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if request.path.startswith('/purchase') %}1{% else %}0{% endif %};">shopping_cart</span>
+            </div>
+            <span class="text-[9px] font-label-sm uppercase tracking-tighter">Buy</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 w-1/5 {% if request.path.startswith('/sale') %}text-primary{% else %}text-on-surface-variant{% endif %}" href="{{ url_for('sale') }}">
+            <div class="p-2 rounded-xl {% if request.path.startswith('/sale') %}bg-secondary-container/20 border-t border-primary shadow-[0_0_8px_rgba(200,240,80,0.15)]{% endif %}">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if request.path.startswith('/sale') %}1{% else %}0{% endif %};">sell</span>
+            </div>
+            <span class="text-[9px] font-label-sm uppercase tracking-tighter">Sell</span>
+        </a>
+        
+        {% if session.get('role') == 'admin' %}
+        <a class="flex flex-col items-center gap-1 w-1/5 {% if request.path.startswith('/admin') or request.path.startswith('/report') %}text-primary{% else %}text-on-surface-variant{% endif %}" href="{{ url_for('admin_panel') }}">
+            <div class="p-2 rounded-xl {% if request.path.startswith('/admin') or request.path.startswith('/report') %}bg-secondary-container/20 border-t border-primary shadow-[0_0_8px_rgba(200,240,80,0.15)]{% endif %}">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if request.path.startswith('/admin') or request.path.startswith('/report') %}1{% else %}0{% endif %};">admin_panel_settings</span>
+            </div>
+            <span class="text-[9px] font-label-sm uppercase tracking-tighter">Admin</span>
+        </a>
+        {% else %}
+        <a class="flex flex-col items-center gap-1 w-1/5 text-error" href="{{ url_for('logout') }}">
+            <div class="p-2 rounded-xl">
+                <span class="material-symbols-outlined">logout</span>
+            </div>
+            <span class="text-[9px] font-label-sm uppercase tracking-tighter">Exit</span>
+        </a>
+        {% endif %}
+    </nav>
+
+    <script>
+        // Micro-interactions
+        const searchInput = document.getElementById('global-search');
+        if (searchInput) {
+            searchInput.addEventListener('focus', () => {
+                searchInput.classList.add('w-80');
+            });
+            searchInput.addEventListener('blur', () => {
+                searchInput.classList.remove('w-80');
+            });
+        }
+    </script>
 </body>
 </html>

@@ -1,250 +1,254 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - NEXUS.</title>
-    <!-- Google Fonts: Syne and DM Mono -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@800&display=swap" rel="stylesheet">
-    
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Register | NEXUS</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
     <style>
-        :root {
-            --bg-color: #0a0a0f;
-            --surface: #111118;
-            --surface-2: #18181f;
-            --accent-green: #c8f050;
-            --danger: #ff4d6d;
-            --warning: #ffb830;
-            --text-color: #ffffff;
-            --text-muted: #88888e;
-            --border: 1px solid #ffffff12;
-            --font-heading: 'Syne', sans-serif;
-            --font-body: 'DM Mono', monospace;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: var(--font-body);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
+            background-color: #0a0a0f;
+            background-image: 
+                radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0);
+            background-size: 40px 40px;
         }
-
-        .auth-container {
-            width: 100%;
-            max-width: 380px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        .glow-border:focus-within {
+            box-shadow: 0 0 12px rgba(200, 240, 80, 0.15);
         }
-
-        .logo {
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 3rem;
-            color: var(--text-color);
-            letter-spacing: -2px;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .logo span {
-            color: var(--accent-green);
-        }
-
-        .auth-card {
-            background-color: var(--surface);
-            border: var(--border);
-            border-radius: 4px;
-            padding: 2rem;
-            width: 100%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .auth-card-title {
-            font-family: var(--font-heading);
-            font-size: 1.1rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            margin-bottom: 1.5rem;
-            border-bottom: var(--border);
-            padding-bottom: 0.5rem;
-            letter-spacing: 0.5px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-            margin-bottom: 1.2rem;
-        }
-
-        .form-group label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
-
-        .form-control {
-            background-color: var(--surface-2);
-            border: var(--border);
-            border-radius: 4px;
-            color: var(--text-color);
-            font-family: var(--font-body);
-            font-size: 0.85rem;
-            padding: 0.65rem 0.85rem;
-            width: 100%;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--accent-green);
-        }
-
-        .btn {
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            padding: 0.75rem;
-            border: none;
-            border-radius: 0;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 0.5rem;
-            transition: opacity 0.2s;
-        }
-
-        .btn-primary {
-            background-color: var(--accent-green);
-            color: #000000;
-        }
-
-        .btn-primary:hover {
-            opacity: 0.9;
-        }
-
-        .auth-footer {
-            margin-top: 1.5rem;
-            text-align: center;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .auth-footer a {
-            color: var(--accent-green);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .auth-footer a:hover {
-            text-decoration: underline;
-        }
-
-        /* Alerts inside auth layout */
-        .flash-container {
-            width: 100%;
-            margin-bottom: 1rem;
-        }
-
-        .alert {
-            padding: 0.75rem 1rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            margin-bottom: 0.5rem;
-            border: var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .alert-success {
-            background-color: rgba(200, 240, 80, 0.1);
-            color: var(--accent-green);
-            border-color: rgba(200, 240, 80, 0.2);
-        }
-
-        .alert-danger {
-            background-color: rgba(255, 77, 109, 0.1);
-            color: var(--danger);
-            border-color: rgba(255, 77, 109, 0.2);
-        }
-
-        .alert-warning {
-            background-color: rgba(255, 184, 48, 0.1);
-            color: var(--warning);
-            border-color: rgba(255, 184, 48, 0.2);
-        }
-
-        .alert-close {
-            background: none;
-            border: none;
-            color: inherit;
-            cursor: pointer;
-            font-size: 1.1rem;
-            line-height: 1;
-            opacity: 0.6;
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
     </style>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+              "on-surface": "#e4e1eb",
+              "on-secondary-container": "#b4abff",
+              "on-tertiary": "#303036",
+              "tertiary-fixed-dim": "#c8c5cd",
+              "on-tertiary-fixed": "#1b1b20",
+              "primary-container": "#c8f050",
+              "tertiary-container": "#e3e0e8",
+              "surface-bright": "#393840",
+              "outline-variant": "#444936",
+              "inverse-on-surface": "#303037",
+              "on-secondary-fixed-variant": "#3f29bc",
+              "on-tertiary-fixed-variant": "#47464c",
+              "secondary": "#c6bfff",
+              "on-background": "#e4e1eb",
+              "on-surface-variant": "#c5c9b0",
+              "outline": "#8f937c",
+              "surface-container-low": "#1b1b22",
+              "secondary-container": "#3f29bc",
+              "on-tertiary-container": "#646369",
+              "surface-container-lowest": "#0e0e14",
+              "tertiary": "#fffdff",
+              "surface-container-high": "#2a2931",
+              "on-primary-fixed": "#161f00",
+              "surface-dim": "#13131a",
+              "inverse-primary": "#506600",
+              "primary-fixed-dim": "#aed536",
+              "on-primary-fixed-variant": "#3c4d00",
+              "surface-variant": "#34343c",
+              "on-secondary-fixed": "#160066",
+              "surface": "#13131a",
+              "inverse-surface": "#e4e1eb",
+              "error": "#ffb4ab",
+              "tertiary-fixed": "#e4e1e9",
+              "on-error-container": "#ffdad6",
+              "secondary-fixed": "#e4dfff",
+              "primary": "#feffed",
+              "surface-container-highest": "#34343c",
+              "on-error": "#690005",
+              "primary-fixed": "#c9f251",
+              "error-container": "#93000a",
+              "background": "#13131a",
+              "on-secondary": "#2800a0",
+              "on-primary": "#283500",
+              "secondary-fixed-dim": "#c6bfff",
+              "on-primary-container": "#546c00",
+              "surface-container": "#1f1f26",
+              "surface-tint": "#aed536"
+            },
+            "borderRadius": {
+              "DEFAULT": "0.125rem",
+              "lg": "0.25rem",
+              "xl": "0.5rem",
+              "full": "0.75rem"
+            },
+            "fontFamily": {
+              "headline-lg": ["Syne"],
+              "label-md": ["JetBrains Mono"],
+              "headline-sm": ["Syne"],
+              "headline-md": ["Syne"],
+              "display-lg": ["Syne"],
+              "body-lg": ["JetBrains Mono"],
+              "label-sm": ["JetBrains Mono"],
+              "body-md": ["JetBrains Mono"]
+            }
+          },
+        }
+      }
+    </script>
 </head>
-<body>
-    <div class="auth-container">
-        <div class="logo">NEXUS<span>.</span></div>
+<body class="min-h-screen flex items-center justify-center p-6 selection:bg-primary-container selection:text-on-primary-container">
+    
+    <main class="relative w-full max-w-md">
+        <!-- Background Atmospheric Element -->
+        <div class="absolute -top-24 -left-24 w-64 h-64 bg-primary-container/5 rounded-full blur-[100px] pointer-events-none"></div>
+        <div class="absolute -bottom-24 -right-24 w-64 h-64 bg-secondary-container/10 rounded-full blur-[100px] pointer-events-none"></div>
         
-        <div class="flash-container">
+        <!-- Flash Messages -->
+        <div class="w-full mb-4 space-y-2">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">
-                            <span>{{ message }}</span>
-                            <button class="alert-close" onclick="this.parentElement.style.display='none';">&times;</button>
+                        <div class="p-3.5 rounded-lg border border-outline-variant/30 flex justify-between items-center text-xs bg-{% if category == 'success' %}primary-container/10 text-primary-container border-primary-container/20{% elif category in ['danger', 'error'] %}error-container/10 text-error border-error-container/20{% else %}secondary-container/10 text-secondary border-secondary-container/20{% endif %}">
+                            <span class="font-label-md">{{ message }}</span>
+                            <button onclick="this.parentElement.remove()" class="hover:opacity-80">
+                                <span class="material-symbols-outlined text-[16px] align-middle">close</span>
+                            </button>
                         </div>
                     {% endfor %}
                 {% endif %}
             {% endwith %}
         </div>
 
-        <div class="auth-card">
-            <h2 class="auth-card-title">Register Account</h2>
-            <form action="{{ url_for('register') }}" method="POST">
-                <div class="form-group">
-                    <label for="name">Full Name</label>
-                    <input type="text" id="name" name="name" class="form-control" placeholder="e.g. John Doe" required autocomplete="name">
+        <!-- Registration Card -->
+        <div class="relative bg-surface-container-low border border-white/10 rounded-xl overflow-hidden shadow-2xl">
+            <!-- Header Section -->
+            <div class="px-8 pt-10 pb-6 text-center">
+                <div class="inline-flex items-center justify-center mb-6">
+                    <span class="font-headline-md text-headline-md font-bold text-primary tracking-tighter after:content-['●'] after:ml-1 after:text-primary-container after:animate-pulse">
+                        NEXUS
+                    </span>
                 </div>
-
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" class="form-control" placeholder="e.g. john@store.com" required autocomplete="email">
+                <h1 class="font-headline-sm text-headline-sm text-on-surface mb-2">Initialize Protocol</h1>
+                <p class="font-body-md text-body-md text-on-surface-variant">Access the centralized inventory network.</p>
+            </div>
+            
+            <!-- Form Section -->
+            <form class="px-8 pb-10 space-y-6" action="{{ url_for('register') }}" method="POST">
+                <!-- Full Name -->
+                <div class="space-y-2 group">
+                    <label class="font-label-md text-label-md text-on-surface-variant flex items-center gap-2" for="name">
+                        <span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+                        Full Name
+                    </label>
+                    <div class="relative glow-border transition-all duration-300">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">person</span>
+                        <input class="w-full bg-surface-container-lowest border border-white/10 rounded-lg py-3 pl-10 pr-4 text-on-surface font-body-md focus:border-primary-container focus:ring-0 transition-all placeholder:text-on-surface-variant/30" id="name" name="name" placeholder="OPERATOR NAME" required autocomplete="name" type="text"/>
+                    </div>
                 </div>
-
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" class="form-control" placeholder="create password" required autocomplete="new-password">
+                <!-- Email Address -->
+                <div class="space-y-2">
+                    <label class="font-label-md text-label-md text-on-surface-variant flex items-center gap-2" for="email">
+                        <span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+                        Email Address
+                    </label>
+                    <div class="relative glow-border transition-all duration-300">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">alternate_email</span>
+                        <input class="w-full bg-surface-container-lowest border border-white/10 rounded-lg py-3 pl-10 pr-4 text-on-surface font-body-md focus:border-primary-container focus:ring-0 transition-all placeholder:text-on-surface-variant/30" id="email" name="email" placeholder="network_id@nexus.sys" required autocomplete="email" type="email"/>
+                    </div>
                 </div>
-
-                <div class="form-group">
-                    <label for="department">Department</label>
-                    <input type="text" id="department" name="department" class="form-control" placeholder="e.g. Procurement" required>
+                <!-- Department -->
+                <div class="space-y-2">
+                    <label class="font-label-md text-label-md text-on-surface-variant flex items-center gap-2" for="department">
+                        <span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+                        Department
+                    </label>
+                    <div class="relative glow-border transition-all duration-300">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">factory</span>
+                        <select class="w-full bg-surface-container-lowest border border-white/10 rounded-lg py-3 pl-10 pr-4 text-on-surface font-body-md focus:border-primary-container focus:ring-0 transition-all appearance-none cursor-pointer" id="department" name="department" required>
+                            <option disabled selected value="">SELECT UNIT</option>
+                            <option value="Logistics Hub">LOGISTICS HUB</option>
+                            <option value="Procurement">PROCUREMENT</option>
+                            <option value="System Analytics">SYSTEM ANALYTICS</option>
+                            <option value="Core Security">CORE SECURITY</option>
+                        </select>
+                        <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+                    </div>
                 </div>
-                
-                <button type="submit" class="btn btn-primary">Create Account</button>
+                <!-- Password -->
+                <div class="space-y-2">
+                    <label class="font-label-md text-label-md text-on-surface-variant flex items-center gap-2" for="password">
+                        <span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+                        Password
+                    </label>
+                    <div class="relative glow-border transition-all duration-300">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">lock</span>
+                        <input class="w-full bg-surface-container-lowest border border-white/10 rounded-lg py-3 pl-10 pr-4 text-on-surface font-body-md focus:border-primary-container focus:ring-0 transition-all placeholder:text-on-surface-variant/30" id="password" name="password" placeholder="••••••••••••" required autocomplete="new-password" type="password"/>
+                    </div>
+                </div>
+                <!-- CTA Button -->
+                <button class="w-full bg-primary-container text-on-primary py-4 rounded-lg font-headline-sm text-headline-sm font-bold tracking-tight active:scale-[0.98] transition-all hover:shadow-[0_0_20px_rgba(200,240,80,0.3)] flex items-center justify-center gap-2 group" type="submit">
+                    CREATE ACCOUNT
+                    <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </button>
+                <!-- Footer Link -->
+                <div class="pt-4 text-center">
+                    <p class="font-body-md text-body-md text-on-surface-variant">
+                        Existing operator? 
+                        <a class="text-primary-fixed underline underline-offset-4 decoration-primary-container/30 hover:decoration-primary-container transition-all animate-pulse" href="{{ url_for('login') }}">Authenticate here</a>
+                    </p>
+                </div>
             </form>
             
-            <div class="auth-footer">
-                Already registered? <a href="{{ url_for('login') }}">Login here</a>
+            <!-- Decorative Scanning Line -->
+            <div class="absolute top-0 left-0 w-full h-[1px] bg-primary-container/40 z-20 pointer-events-none" id="scanner"></div>
+        </div>
+        
+        <!-- System Status Bar -->
+        <div class="mt-8 flex justify-between items-center px-2">
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant">SERVER: ONLINE</span>
+                </div>
+                <div class="w-[1px] h-3 bg-white/10"></div>
+                <div class="font-label-sm text-label-sm text-on-surface-variant">SSL: 256-BIT AES</div>
+            </div>
+            <div class="font-label-sm text-label-sm text-on-surface-variant opacity-50">
+                v2.4.0-STABLE
             </div>
         </div>
-    </div>
+    </main>
+    
+    <script>
+        // Simple scanning effect animation
+        const scanner = document.getElementById('scanner');
+        let pos = 0;
+        let direction = 1;
+        
+        function animateScanner() {
+            pos += 0.5 * direction;
+            if (pos >= 100 || pos <= 0) direction *= -1;
+            scanner.style.top = pos + '%';
+            requestAnimationFrame(animateScanner);
+        }
+        animateScanner();
+
+        // Interactive focus states for the "Neon Dot"
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                const labelDot = input.closest('.space-y-2').querySelector('.w-1.5');
+                if(labelDot) {
+                    labelDot.classList.add('scale-150', 'shadow-[0_0_8px_#c8f050]');
+                }
+            });
+            input.addEventListener('blur', () => {
+                const labelDot = input.closest('.space-y-2').querySelector('.w-1.5');
+                if(labelDot) {
+                    labelDot.classList.remove('scale-150', 'shadow-[0_0_8px_#c8f050]');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

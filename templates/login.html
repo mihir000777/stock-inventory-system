@@ -1,240 +1,252 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - NEXUS.</title>
-    <!-- Google Fonts: Syne and DM Mono -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@800&display=swap" rel="stylesheet">
-    
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Login | NEXUS</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
     <style>
-        :root {
-            --bg-color: #0a0a0f;
-            --surface: #111118;
-            --surface-2: #18181f;
-            --accent-green: #c8f050;
-            --danger: #ff4d6d;
-            --warning: #ffb830;
-            --text-color: #ffffff;
-            --text-muted: #88888e;
-            --border: 1px solid #ffffff12;
-            --font-heading: 'Syne', sans-serif;
-            --font-body: 'DM Mono', monospace;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: var(--font-body);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
+            background-color: #0a0a0f;
+            overflow: hidden;
         }
-
-        .auth-container {
+        .neon-glow {
+            box-shadow: 0 0 15px rgba(200, 240, 80, 0.15);
+        }
+        .neon-glow-active:focus-within {
+            box-shadow: 0 0 20px rgba(200, 240, 80, 0.25);
+        }
+        .glass-panel {
+            background: rgba(17, 17, 24, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .scan-line {
             width: 100%;
-            max-width: 380px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #c8f050, transparent);
+            position: absolute;
+            top: -2px;
+            left: 0;
+            animation: scan 4s linear infinite;
+            opacity: 0.3;
+            pointer-events: none;
         }
-
-        .logo {
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 3rem;
-            color: var(--text-color);
-            letter-spacing: -2px;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .logo span {
-            color: var(--accent-green);
-        }
-
-        .auth-card {
-            background-color: var(--surface);
-            border: var(--border);
-            border-radius: 4px;
-            padding: 2rem;
-            width: 100%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .auth-card-title {
-            font-family: var(--font-heading);
-            font-size: 1.1rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            margin-bottom: 1.5rem;
-            border-bottom: var(--border);
-            padding-bottom: 0.5rem;
-            letter-spacing: 0.5px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-            margin-bottom: 1.2rem;
-        }
-
-        .form-group label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
-
-        .form-control {
-            background-color: var(--surface-2);
-            border: var(--border);
-            border-radius: 4px;
-            color: var(--text-color);
-            font-family: var(--font-body);
-            font-size: 0.85rem;
-            padding: 0.65rem 0.85rem;
-            width: 100%;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--accent-green);
-        }
-
-        .btn {
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            padding: 0.75rem;
-            border: none;
-            border-radius: 0;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 0.5rem;
-            transition: opacity 0.2s;
-        }
-
-        .btn-primary {
-            background-color: var(--accent-green);
-            color: #000000;
-        }
-
-        .btn-primary:hover {
-            opacity: 0.9;
-        }
-
-        .auth-footer {
-            margin-top: 1.5rem;
-            text-align: center;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .auth-footer a {
-            color: var(--accent-green);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .auth-footer a:hover {
-            text-decoration: underline;
-        }
-
-        /* Alerts inside auth layout */
-        .flash-container {
-            width: 100%;
-            margin-bottom: 1rem;
-        }
-
-        .alert {
-            padding: 0.75rem 1rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            margin-bottom: 0.5rem;
-            border: var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .alert-success {
-            background-color: rgba(200, 240, 80, 0.1);
-            color: var(--accent-green);
-            border-color: rgba(200, 240, 80, 0.2);
-        }
-
-        .alert-danger {
-            background-color: rgba(255, 77, 109, 0.1);
-            color: var(--danger);
-            border-color: rgba(255, 77, 109, 0.2);
-        }
-
-        .alert-warning {
-            background-color: rgba(255, 184, 48, 0.1);
-            color: var(--warning);
-            border-color: rgba(255, 184, 48, 0.2);
-        }
-
-        .alert-close {
-            background: none;
-            border: none;
-            color: inherit;
-            cursor: pointer;
-            font-size: 1.1rem;
-            line-height: 1;
-            opacity: 0.6;
+        @keyframes scan {
+            0% { top: 0%; }
+            100% { top: 100%; }
         }
     </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#e4e1eb",
+                        "on-secondary-container": "#b4abff",
+                        "on-tertiary": "#303036",
+                        "tertiary-fixed-dim": "#c8c5cd",
+                        "on-tertiary-fixed": "#1b1b20",
+                        "primary-container": "#c8f050",
+                        "tertiary-container": "#e3e0e8",
+                        "surface-bright": "#393840",
+                        "outline-variant": "#444936",
+                        "inverse-on-surface": "#303037",
+                        "on-secondary-fixed-variant": "#3f29bc",
+                        "on-tertiary-fixed-variant": "#47464c",
+                        "secondary": "#c6bfff",
+                        "on-background": "#e4e1eb",
+                        "on-surface-variant": "#c5c9b0",
+                        "outline": "#8f937c",
+                        "surface-container-low": "#1b1b22",
+                        "secondary-container": "#3f29bc",
+                        "on-tertiary-container": "#646369",
+                        "surface-container-lowest": "#0e0e14",
+                        "tertiary": "#fffdff",
+                        "surface-container-high": "#2a2931",
+                        "on-primary-fixed": "#161f00",
+                        "surface-dim": "#13131a",
+                        "inverse-primary": "#506600",
+                        "primary-fixed-dim": "#aed536",
+                        "on-primary-fixed-variant": "#3c4d00",
+                        "surface-variant": "#34343c",
+                        "on-secondary-fixed": "#160066",
+                        "surface": "#13131a",
+                        "inverse-surface": "#e4e1eb",
+                        "error": "#ffb4ab",
+                        "tertiary-fixed": "#e4e1e9",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed": "#e4dfff",
+                        "primary": "#feffed",
+                        "surface-container-highest": "#34343c",
+                        "on-error": "#690005",
+                        "primary-fixed": "#c9f251",
+                        "error-container": "#93000a",
+                        "background": "#13131a",
+                        "on-secondary": "#2800a0",
+                        "on-primary": "#283500",
+                        "secondary-fixed-dim": "#c6bfff",
+                        "on-primary-container": "#546c00",
+                        "surface-container": "#1f1f26",
+                        "surface-tint": "#aed536"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Syne"],
+                        "label-md": ["JetBrains Mono"],
+                        "headline-sm": ["Syne"],
+                        "headline-md": ["Syne"],
+                        "display-lg": ["Syne"],
+                        "body-lg": ["JetBrains Mono"],
+                        "label-sm": ["JetBrains Mono"],
+                        "body-md": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "headline-sm": ["20px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-sm": ["10px", {"lineHeight": "1", "fontWeight": "500"}],
+                        "body-md": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
-    <div class="auth-container">
-        <div class="logo">NEXUS<span>.</span></div>
-        
-        <div class="flash-container">
+<body class="bg-surface-container-lowest text-on-surface min-h-screen flex items-center justify-center p-6 selection:bg-primary-container selection:text-on-primary">
+    
+    <!-- Atmospheric Background Decoration -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden">
+        <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-secondary-container/10 rounded-full blur-[120px]"></div>
+        <div class="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-primary-container/5 rounded-full blur-[120px]"></div>
+        <div class="absolute inset-0 opacity-[0.03]" style="background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');"></div>
+    </div>
+    
+    <!-- Main Auth Container -->
+    <main class="relative w-full max-w-[440px] z-10">
+        <!-- Logo Branding Header -->
+        <div class="flex flex-col items-center mb-8 space-y-2">
+            <div class="flex items-center gap-2">
+                <span class="font-headline-md text-headline-md font-bold text-primary tracking-tighter after:content-['●'] after:ml-1 after:text-primary-container after:animate-pulse">NEXUS</span>
+            </div>
+            <div class="h-[1px] w-12 bg-outline-variant"></div>
+            <p class="font-label-md text-label-md text-on-surface-variant tracking-widest">CENTRAL TERMINAL ACCESS</p>
+        </div>
+
+        <!-- Flash messages -->
+        <div class="w-full mb-4 space-y-2">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">
-                            <span>{{ message }}</span>
-                            <button class="alert-close" onclick="this.parentElement.style.display='none';">&times;</button>
+                        <div class="p-3.5 rounded-lg border border-outline-variant/30 flex justify-between items-center text-xs bg-{% if category == 'success' %}primary-container/10 text-primary-container border-primary-container/20{% elif category in ['danger', 'error'] %}error-container/10 text-error border-error-container/20{% else %}secondary-container/10 text-secondary border-secondary-container/20{% endif %}">
+                            <span class="font-label-md">{{ message }}</span>
+                            <button onclick="this.parentElement.remove()" class="hover:opacity-80">
+                                <span class="material-symbols-outlined text-[16px] align-middle">close</span>
+                            </button>
                         </div>
                     {% endfor %}
                 {% endif %}
             {% endwith %}
         </div>
 
-        <div class="auth-card">
-            <h2 class="auth-card-title">Account Login</h2>
-            <form action="{{ url_for('login') }}" method="POST">
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" class="form-control" placeholder="enter email" required autocomplete="email">
+        <!-- Login Card -->
+        <div class="glass-panel p-10 rounded-xl relative overflow-hidden">
+            <div class="scan-line"></div>
+            <div class="mb-8">
+                <h1 class="font-headline-lg text-headline-lg text-primary tracking-tight mb-2">Initialize Session</h1>
+                <p class="font-body-md text-body-md text-on-surface-variant">Enter authorized credentials to proceed.</p>
+            </div>
+            
+            <form class="space-y-6" action="{{ url_for('login') }}" method="POST">
+                <!-- Email Field -->
+                <div class="space-y-2 group">
+                    <label class="font-label-md text-label-md text-on-surface-variant flex items-center gap-2" for="email">
+                        <span class="material-symbols-outlined text-[14px]">alternate_email</span>
+                        EMAIL ADDRESS
+                    </label>
+                    <div class="relative neon-glow-active transition-all duration-300">
+                        <input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3.5 font-body-md text-body-md focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none transition-all placeholder:text-on-tertiary-container" id="email" name="email" placeholder="admin@nexus.system" type="email" required autocomplete="email"/>
+                        <div class="absolute right-4 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-primary-container shadow-[0_0_8px_#c8f050]"></div>
+                    </div>
+                </div>
+                <!-- Password Field -->
+                <div class="space-y-2 group">
+                    <div class="flex justify-between items-center">
+                        <label class="font-label-md text-label-md text-on-surface-variant flex items-center gap-2" for="password">
+                            <span class="material-symbols-outlined text-[14px]">lock</span>
+                            ENCRYPTED PASSWORD
+                        </label>
+                    </div>
+                    <div class="relative neon-glow-active transition-all duration-300">
+                        <input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3.5 font-body-md text-body-md focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none transition-all placeholder:text-on-tertiary-container" id="password" name="password" placeholder="••••••••••••" type="password" required autocomplete="current-password"/>
+                        <button class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors" type="button" onclick="togglePasswordVisibility()">
+                            <span class="material-symbols-outlined text-[18px]" id="password-visibility-icon">visibility_off</span>
+                        </button>
+                    </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" class="form-control" placeholder="enter password" required autocomplete="current-password">
-                </div>
-                
-                <button type="submit" class="btn btn-primary">Sign In</button>
+                <!-- Submit Button -->
+                <button class="w-full bg-primary-container hover:bg-primary-fixed-dim text-on-primary font-headline-sm text-headline-sm py-4 rounded-lg flex items-center justify-center gap-3 active:scale-[0.98] transition-all duration-150 neon-glow" type="submit">
+                    SIGN IN
+                    <span class="material-symbols-outlined">login</span>
+                </button>
             </form>
             
-            <div class="auth-footer">
-                Don't have an account? <a href="{{ url_for('register') }}">Register here</a>
+            <!-- Footer Links -->
+            <div class="mt-8 pt-8 border-t border-outline-variant/30 text-center">
+                <p class="font-body-md text-body-md text-on-surface-variant mb-4">New operator requiring access?</p>
+                <a class="inline-flex items-center gap-2 font-label-md text-label-md text-primary border border-primary/20 hover:border-primary/60 px-6 py-2.5 rounded-full transition-all group" href="{{ url_for('register') }}">
+                    REGISTER NEW ACCOUNT
+                    <span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </a>
             </div>
         </div>
-    </div>
+        
+        <!-- Terminal Status Footer -->
+        <div class="mt-8 flex justify-between items-center px-4 font-label-sm text-label-sm text-on-tertiary-container">
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-[#c8f050] animate-pulse"></span>
+                CORE SYSTEMS NOMINAL
+            </div>
+            <div>VER: 4.8.2-LTS</div>
+        </div>
+    </main>
+    
+    <script>
+        // Password visibility toggle
+        function togglePasswordVisibility() {
+            const passwordField = document.getElementById('password');
+            const icon = document.getElementById('password-visibility-icon');
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                icon.textContent = 'visibility';
+            } else {
+                passwordField.type = 'password';
+                icon.textContent = 'visibility_off';
+            }
+        }
+        
+        // Button glow effect
+        const btn = document.querySelector('button[type="submit"]');
+        if (btn) {
+            btn.addEventListener('mouseenter', () => {
+                btn.style.boxShadow = '0 0 25px rgba(200, 240, 80, 0.4)';
+            });
+            btn.addEventListener('mouseleave', () => {
+                btn.style.boxShadow = '0 0 15px rgba(200, 240, 80, 0.15)';
+            });
+        }
+    </script>
 </body>
 </html>

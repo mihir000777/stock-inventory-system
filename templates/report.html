@@ -1,63 +1,141 @@
 {% extends 'base.html' %}
 
-{% block title %}Report{% endblock %}
+{% block title %}Inventory Valuation Report | NEXUS{% endblock %}
+{% block section_title %}Reports{% endblock %}
 
 {% block content %}
-<div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start;">
+<style>
+    @media print {
+        .no-print { display: none !important; }
+        body { background: #0a0a0f !important; color: #e4e1eb !important; }
+        aside { display: none !important; }
+        header { display: none !important; }
+        main { margin-left: 0 !important; padding: 0 !important; }
+    }
+</style>
+
+<!-- Report Header -->
+<div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-10 border-l-4 border-primary-container pl-6">
     <div>
-        <h1 class="page-title">Inventory Report</h1>
-        <p class="page-description">Complete stock valuation breakdown by product.</p>
+        <h2 class="font-headline-lg text-headline-lg text-primary uppercase tracking-tight">Inventory Valuation Report</h2>
+        <p class="font-label-md text-label-md text-on-surface-variant mt-1">
+            Real-time asset calculation ledger & procurement audit sheet.
+        </p>
     </div>
-    <button onclick="window.print();" class="btn btn-secondary">Print Report</button>
+    <div class="flex gap-3 no-print">
+        <button onclick="window.print();" class="px-4 py-2 border border-outline-variant rounded-lg text-on-surface hover:bg-surface-container-high transition-all font-label-md flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">print</span> Print Report
+        </button>
+    </div>
 </div>
 
-<!-- Report Table -->
-<div class="glass-panel">
-    <div class="panel-heading">Asset Valuation Ledger</div>
+<!-- Bento Grid Stats -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-surface-container-low border border-outline-variant p-6 rounded-xl flex flex-col gap-2">
+        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Total SKU Count</span>
+        <span class="font-headline-md text-headline-md text-primary font-bold">{{ report_data|length }}</span>
+    </div>
+    <div class="bg-surface-container-low border border-outline-variant p-6 rounded-xl flex flex-col gap-2">
+        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Cumulative Stock Quantity</span>
+        <span class="font-headline-md text-headline-md text-secondary font-bold">{{ total_items }}</span>
+    </div>
+    <div class="bg-surface-container-low border border-outline-variant p-6 rounded-xl flex flex-col gap-2 relative overflow-hidden group">
+        <div class="relative z-10">
+            <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Gross Asset Valuation</span>
+            <span class="font-headline-md text-headline-md text-primary-container font-bold">{{ total_value | currency }}</span>
+        </div>
+        <div class="absolute right-0 bottom-0 opacity-5 group-hover:opacity-10 transition-opacity">
+            <span class="material-symbols-outlined text-[80px]" style="font-variation-settings: 'FILL' 1;">monitoring</span>
+        </div>
+    </div>
+</div>
+
+<!-- Valuation Table -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden mb-8">
     {% if report_data %}
-    <div class="table-responsive">
-        <table>
+    <div class="overflow-x-auto w-full">
+        <table class="w-full text-left border-collapse text-xs font-body-md">
             <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Product</th>
-                    <th>Category</th>
-                    <th class="text-right">Unit Price</th>
-                    <th class="text-right">Quantity</th>
-                    <th class="text-right">Total Value</th>
-                    <th class="text-center">Status</th>
+                <tr class="bg-surface-container-high text-on-surface uppercase font-label-sm">
+                    <th class="p-4 border-b border-outline-variant">#</th>
+                    <th class="p-4 border-b border-outline-variant">Product Name</th>
+                    <th class="p-4 border-b border-outline-variant">Category</th>
+                    <th class="p-4 border-b border-outline-variant text-right">Unit Price</th>
+                    <th class="p-4 border-b border-outline-variant text-center">Quantity</th>
+                    <th class="p-4 border-b border-outline-variant text-right">Total Value</th>
+                    <th class="p-4 border-b border-outline-variant text-center">Status</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="divide-y divide-outline-variant/20">
                 {% for item in report_data %}
-                <tr class="{% if item.quantity < 10 %}highlight-row-danger{% endif %}">
-                    <td>{{ loop.index }}</td>
-                    <td style="color: var(--text-color);">{{ item.name }}</td>
-                    <td>{{ item.category or 'N/A' }}</td>
-                    <td class="text-right">{{ item.price | currency }}</td>
-                    <td class="text-right" style="font-weight:500;">{{ item.quantity }}</td>
-                    <td class="text-right" style="color: var(--accent-green); font-weight:500;">{{ item.total_value | currency }}</td>
-                    <td class="text-center">
+                <tr class="hover:bg-surface-container-high transition-colors {% if item.quantity < 10 %}bg-error-container/5{% endif %}">
+                    <td class="p-4 text-on-surface-variant">{{ loop.index }}</td>
+                    <td class="p-4 font-bold text-primary-container font-label-md">{{ item.name }}</td>
+                    <td class="p-4 text-on-surface-variant">{{ item.category or 'N/A' }}</td>
+                    <td class="p-4 text-right text-on-surface">{{ item.price | currency }}</td>
+                    <td class="p-4 text-center font-bold text-on-surface">{{ item.quantity }}</td>
+                    <td class="p-4 text-right font-bold text-primary">{{ item.total_value | currency }}</td>
+                    <td class="p-4 text-center">
                         {% if item.quantity < 10 %}
-                        <span class="badge badge-danger">Low Stock</span>
+                        <span class="px-2.5 py-0.5 rounded bg-error-container/10 text-error text-[9px] font-bold border border-error-container/20">LOW STOCK</span>
                         {% else %}
-                        <span class="badge badge-success">OK</span>
+                        <span class="px-2.5 py-0.5 rounded bg-primary-container/10 text-primary-container text-[9px] font-bold border border-primary-container/20">NOMINAL</span>
                         {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
-                <!-- Grand Total Row -->
-                <tr style="background-color: var(--surface-2); border-top: 2px solid var(--accent-green);">
-                    <td colspan="4" style="color: var(--text-color); font-family: var(--font-heading); font-weight:800; text-transform:uppercase;">Grand Total</td>
-                    <td class="text-right" style="color: var(--text-color); font-weight:500;">{{ total_items }}</td>
-                    <td class="text-right" style="color: var(--accent-green); font-family: var(--font-heading); font-weight:800; font-size:1.1rem;">{{ total_value | currency }}</td>
-                    <td></td>
-                </tr>
             </tbody>
+            <tfoot>
+                <tr class="bg-surface-container-high/50 border-t-2 border-primary-container">
+                    <td class="p-5 font-headline-sm text-headline-sm text-primary uppercase" colspan="3">Grand Totals</td>
+                    <td class="p-5 text-right font-label-md text-label-md text-on-surface-variant italic">Cumulative Assets</td>
+                    <td class="p-5 text-center font-headline-sm text-headline-sm text-on-surface font-bold">{{ total_items }}</td>
+                    <td class="p-5 text-right font-headline-sm text-headline-sm text-primary-container font-bold shadow-[0_0_12px_rgba(200,240,80,0.15)]">{{ total_value | currency }}</td>
+                    <td class="p-5"></td>
+                </tr>
+            </tfoot>
         </table>
     </div>
     {% else %}
-    <div class="empty-state">No products in inventory to report.</div>
+    <div class="text-center py-12 text-on-surface-variant/50">No products registered in catalog to run valuation matrix.</div>
     {% endif %}
+</div>
+
+<!-- Visual Context (No Print) -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 no-print">
+    <div class="h-64 rounded-xl overflow-hidden relative">
+        <img class="w-full h-full object-cover opacity-30 grayscale hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDM5wLtwe-pmdGfczN0lbDd-hN3QI8u1M__llzdGzGh7YaqHfYO3D-MjkHWppDB6hZHocFUsZZTwIT-GFPV3Y20OVpjeC9km5zrfQunNn6ph1-bPoTLjSVgUrETfYzbF_f6nfMStp1FFf7QXhkzpBwWIYKSPJTi0aZTyQeZ06IZRYJSwM5KfQpaawTaFCQzs3o9gCDSYYD6b4o8kP6eXH7PoSFPi0Iym9GkTrAbo5rhEsK-qlG32T1L67JRE98YKrfG4VeHGZyJHGg" alt="Warehouse Zone Alpha"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-background to-transparent flex items-end p-6">
+            <div class="flex items-center gap-4">
+                <div class="bg-primary-container/10 text-primary-container p-3 rounded-lg border border-primary-container/20">
+                    <span class="material-symbols-outlined">warehouse</span>
+                </div>
+                <div>
+                    <h4 class="font-headline-sm text-headline-sm text-primary">Warehouse Zone Alpha</h4>
+                    <p class="font-label-sm text-label-sm text-on-surface-variant">Capacity Utilization: 94%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-surface-container border border-outline-variant p-6 rounded-xl flex flex-col justify-center">
+        <div class="flex items-center gap-4 mb-4">
+            <span class="material-symbols-outlined text-secondary text-3xl">info</span>
+            <h4 class="font-headline-sm text-headline-sm text-on-surface uppercase tracking-wider">Accounting Framework</h4>
+        </div>
+        <p class="font-body-md text-body-md text-on-surface-variant mb-6 leading-relaxed">
+            This system auto-aggregates valuations using live database counts. Asset values are determined using base pricing values. All metrics output in USD.
+        </p>
+        <div class="flex gap-4">
+            <div class="flex items-center gap-2 px-3 py-1 bg-secondary-container/10 border border-secondary/20 rounded-full text-secondary font-label-sm">
+                <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                LIVE SYNC
+            </div>
+            <div class="flex items-center gap-2 px-3 py-1 bg-primary-container/10 border border-primary/20 rounded-full text-primary-container font-label-sm">
+                <span class="w-1.5 h-1.5 rounded-full bg-primary-container shadow-[0_0_6px_#c8f050]"></span>
+                AUDITED
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

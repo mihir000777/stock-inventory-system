@@ -1,142 +1,224 @@
 {% extends 'base.html' %}
 
-{% block title %}Products{% endblock %}
+{% block title %}Products Catalog | NEXUS{% endblock %}
+{% block section_title %}Inventory{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1 class="page-title">Products</h1>
-    <p class="page-description">{% if session.get('role') == 'admin' %}Manage product catalog — add, edit, or remove items.{% else %}View current stock levels and product details.{% endif %}</p>
-</div>
-
-{% if session.get('role') == 'admin' %}
-<!-- Add / Edit Product Form (Admin Only) -->
-<div class="glass-panel">
-    {% if edit_product %}
-    <div class="panel-heading">Edit Product #{{ edit_product.product_id }}</div>
-    <form action="{{ url_for('edit_product', product_id=edit_product.product_id) }}" method="POST">
-        <div class="form-grid">
-            <div class="form-group">
-                <label for="name">Product Name *</label>
-                <input type="text" id="name" name="name" class="form-control" value="{{ edit_product.name }}" required>
-            </div>
-            <div class="form-group">
-                <label for="category">Category</label>
-                <input type="text" id="category" name="category" class="form-control" value="{{ edit_product.category or '' }}">
-            </div>
-            <div class="form-group">
-                <label for="price">Price ($)</label>
-                <input type="number" id="price" name="price" step="0.01" min="0" class="form-control" value="{{ edit_product.price }}" required>
-            </div>
-            <div class="form-group">
-                <label for="quantity">Quantity</label>
-                <input type="number" id="quantity" name="quantity" min="0" class="form-control" value="{{ edit_product.quantity }}" required>
-            </div>
-            <div class="form-group">
-                <label for="supplier_id">Supplier</label>
-                <select id="supplier_id" name="supplier_id" class="form-control">
-                    <option value="">-- None --</option>
-                    {% for s in suppliers %}
-                    <option value="{{ s.supplier_id }}" {% if edit_product.supplier_id == s.supplier_id %}selected{% endif %}>{{ s.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group" style="display:flex; align-items:flex-end; gap:0.5rem;">
-                <button type="submit" class="btn btn-primary" style="flex:1;">Update</button>
-                <a href="{{ url_for('products') }}" class="btn btn-secondary" style="flex:1; text-align:center;">Cancel</a>
-            </div>
-        </div>
-    </form>
-    {% else %}
-    <div class="panel-heading">Add New Product</div>
-    <form action="{{ url_for('products') }}" method="POST">
-        <div class="form-grid">
-            <div class="form-group">
-                <label for="name">Product Name *</label>
-                <input type="text" id="name" name="name" class="form-control" placeholder="e.g. Intel Core i9" required>
-            </div>
-            <div class="form-group">
-                <label for="category">Category</label>
-                <input type="text" id="category" name="category" class="form-control" placeholder="e.g. Electronics">
-            </div>
-            <div class="form-group">
-                <label for="price">Price ($)</label>
-                <input type="number" id="price" name="price" step="0.01" min="0" class="form-control" placeholder="0.00" required>
-            </div>
-            <div class="form-group">
-                <label for="quantity">Quantity</label>
-                <input type="number" id="quantity" name="quantity" min="0" class="form-control" placeholder="0" required>
-            </div>
-            <div class="form-group">
-                <label for="supplier_id">Supplier</label>
-                <select id="supplier_id" name="supplier_id" class="form-control">
-                    <option value="">-- None --</option>
-                    {% for s in suppliers %}
-                    <option value="{{ s.supplier_id }}">{{ s.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group" style="display:flex; align-items:flex-end;">
-                <button type="submit" class="btn btn-primary" style="width:100%;">Add Product</button>
-            </div>
-        </div>
-    </form>
-    {% endif %}
-</div>
-{% endif %}
-
-<!-- Products Table -->
-<div class="glass-panel">
-    <div class="panel-heading">Product Catalog</div>
-    {% if products %}
-    <div class="table-responsive">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Category</th>
-                    <th class="text-right">Price</th>
-                    <th class="text-right">Stock</th>
-                    <th>Supplier</th>
-                    <th class="text-center">Status</th>
-                    {% if session.get('role') == 'admin' %}
-                    <th class="text-center">Actions</th>
-                    {% endif %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for p in products %}
-                <tr class="{% if p.quantity < 10 %}highlight-row-danger{% endif %}">
-                    <td>#{{ p.product_id }}</td>
-                    <td style="color: var(--text-color);">{{ p.name }}</td>
-                    <td>{{ p.category or 'N/A' }}</td>
-                    <td class="text-right">{{ p.price | currency }}</td>
-                    <td class="text-right" style="font-weight:500;">{{ p.quantity }}</td>
-                    <td>{{ p.supplier_name or 'None' }}</td>
-                    <td class="text-center">
-                        {% if p.quantity < 10 %}
-                        <span class="badge badge-danger">Low</span>
-                        {% else %}
-                        <span class="badge badge-success">OK</span>
-                        {% endif %}
-                    </td>
-                    {% if session.get('role') == 'admin' %}
-                    <td class="text-center">
-                        <div class="action-buttons" style="justify-content:center;">
-                            <a href="{{ url_for('products', edit_id=p.product_id) }}" class="btn btn-secondary" style="padding:0.35rem 0.6rem; font-size:0.7rem;">Edit</a>
-                            <form action="{{ url_for('delete_product', product_id=p.product_id) }}" method="POST" class="action-form" onsubmit="return confirm('Delete this product?');">
-                                <button type="submit" class="btn btn-danger" style="padding:0.35rem 0.6rem; font-size:0.7rem;">Del</button>
-                            </form>
-                        </div>
-                    </td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:justify-between md:items-end gap-4 mb-8">
+    <div>
+        <h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">Product Catalog</h2>
+        <p class="font-body-lg text-body-lg text-on-surface-variant mt-2 max-w-xl">
+            {% if session.get('role') == 'admin' %}
+            Manage product catalog — add, edit, or remove assets in real-time.
+            {% else %}
+            View current stock levels and product assets in the central registry.
+            {% endif %}
+        </p>
     </div>
-    {% else %}
-    <div class="empty-state">No products found in catalog.</div>
+    <div class="flex gap-4">
+        <div class="bg-surface-container border border-outline-variant px-5 py-3.5 rounded-xl flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary-container">inventory</span>
+            </div>
+            <div>
+                <p class="font-label-sm text-[10px] text-on-surface-variant uppercase tracking-widest">Total SKUs</p>
+                <p class="font-headline-sm text-headline-sm text-on-surface font-bold">{{ products|length }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-12 gap-6">
+    <!-- Product Catalog Table -->
+    <div class="col-span-12 {% if session.get('role') == 'admin' %}lg:col-span-8{% endif %}">
+        <div class="bg-surface-container-low border border-outline-variant rounded-xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-outline-variant bg-surface-container/30 flex justify-between items-center">
+                <h3 class="font-headline-sm text-headline-sm flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-primary-container animate-pulse shadow-[0_0_8px_#c8f050]"></span>
+                    Live Inventory Catalog
+                </h3>
+            </div>
+            
+            <div class="overflow-x-auto w-full">
+                {% if products %}
+                <table class="w-full border-collapse text-left text-xs font-body-md">
+                    <thead>
+                        <tr class="bg-surface-container-lowest/50 text-on-surface-variant font-label-sm uppercase">
+                            <th class="p-4 border-b border-outline-variant/30">ID</th>
+                            <th class="p-4 border-b border-outline-variant/30">Name</th>
+                            <th class="p-4 border-b border-outline-variant/30">Category</th>
+                            <th class="p-4 border-b border-outline-variant/30 text-right">Price</th>
+                            <th class="p-4 border-b border-outline-variant/30 text-center">Stock</th>
+                            <th class="p-4 border-b border-outline-variant/30">Supplier</th>
+                            <th class="p-4 border-b border-outline-variant/30 text-center">Status</th>
+                            {% if session.get('role') == 'admin' %}
+                            <th class="p-4 border-b border-outline-variant/30 text-right">Actions</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-outline-variant/20">
+                        {% for p in products %}
+                        <tr class="hover:bg-surface-container-high transition-colors group {% if p.quantity < 10 %}bg-error-container/5{% endif %}">
+                            <td class="p-4 font-label-md text-primary-container font-bold">#{{ p.product_id }}</td>
+                            <td class="p-4 font-headline-sm text-headline-sm text-[15px] text-on-surface font-semibold">{{ p.name }}</td>
+                            <td class="p-4 text-on-surface-variant">{{ p.category or 'N/A' }}</td>
+                            <td class="p-4 text-right text-on-surface">{{ p.price | currency }}</td>
+                            <td class="p-4 text-center font-bold text-on-surface">{{ p.quantity }}</td>
+                            <td class="p-4 text-on-surface-variant">{{ p.supplier_name or 'None' }}</td>
+                            <td class="p-4 text-center">
+                                {% if p.quantity < 10 %}
+                                <span class="px-2.5 py-0.5 rounded bg-error-container/10 text-error text-[10px] font-bold border border-error-container/20 w-fit uppercase status-low">Low Stock</span>
+                                {% else %}
+                                <span class="px-2.5 py-0.5 rounded bg-primary-container/10 text-primary-container text-[10px] font-bold border border-primary-container/20 w-fit uppercase">In Stock</span>
+                                {% endif %}
+                            </td>
+                            {% if session.get('role') == 'admin' %}
+                            <td class="p-4 text-right">
+                                <div class="flex justify-end gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <a class="p-1.5 text-primary-container hover:bg-primary-container/10 rounded-lg transition-colors" href="{{ url_for('products', edit_id=p.product_id) }}">
+                                        <span class="material-symbols-outlined text-[18px]">edit</span>
+                                    </a>
+                                    <form action="{{ url_for('delete_product', product_id=p.product_id) }}" method="POST" class="inline" onsubmit="return confirm('Confirm deletion of this product from catalog?');">
+                                        <button class="p-1.5 text-error hover:bg-error-container/20 rounded-lg transition-colors" type="submit">
+                                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="text-center py-12 text-on-surface-variant/50">No products registered in the database catalog yet.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Admin Form Drawer/Panel -->
+    {% if session.get('role') == 'admin' %}
+    <div class="col-span-12 lg:col-span-4 space-y-6">
+        <div class="bg-surface-container border border-outline-variant rounded-xl p-6">
+            {% if edit_product %}
+            <h3 class="font-headline-sm text-headline-sm text-primary-container mb-6 flex items-center gap-2">
+                <span class="material-symbols-outlined">edit_square</span>
+                Edit Asset #{{ edit_product.product_id }}
+            </h3>
+            
+            <form class="space-y-4" action="{{ url_for('edit_product', product_id=edit_product.product_id) }}" method="POST">
+                <div class="space-y-1">
+                    <label class="font-label-md text-label-md text-on-surface-variant uppercase ml-1 block" for="edit_name">Product Name *</label>
+                    <input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 focus:ring-1 focus:ring-primary-container focus:border-primary-container outline-none text-on-surface font-body-md transition-all" id="edit_name" name="name" value="{{ edit_product.name }}" type="text" required/>
+                </div>
+                
+                <div class="space-y-1">
+                    <label class="font-label-md text-label-md text-on-surface-variant uppercase ml-1 block" for="edit_category">Category</label>
+                    <input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 focus:ring-1 focus:ring-primary-container focus:border-primary-container outline-none text-on-surface font-body-md transition-all" id="edit_category" name="category" value="{{ edit_product.category or '' }}" type="text"/>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="font-label-md text-label-md text-on-surface-variant uppercase ml-1 block" for="edit_price">Price ($) *</label>
+                        <input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 focus:ring-1 focus:ring-primary-container focus:border-primary-container outline-none text-on-surface font-body-md transition-all" id="edit_price" name="price" step="0.01" min="0" value="{{ edit_product.price }}" type="number" required/>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="font-label-md text-label-md text-on-surface-variant uppercase ml-1 block" for="edit_quantity">Quantity *</label>
+                        <input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 focus:ring-1 focus:ring-primary-container focus:border-primary-container outline-none text-on-surface font-body-md transition-all" id="edit_quantity" name="quantity" min="0" value="{{ edit_product.quantity }}" type="number" required/>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="font-label-md text-label-md text-on-surface-variant uppercase ml-1 block" for="edit_supplier_id">Supplier</label>
+                    <select class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 focus:ring-1 focus:ring-primary-container focus:border-primary-container outline-none text-on-surface font-body-md transition-all appearance-none cursor-pointer" id="edit_supplier_id" name="supplier_id">
+                        <option value="">-- None --</option>
+                        {% for s in suppliers %}
+                        <option value="{{ s.supplier_id }}" {% if edit_product.supplier_id == s.supplier_id %}selected{% endif %}>{{ s.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="pt-4 flex gap-3">
+                    <button class="flex-1 bg-primary-container text-on-primary-container font-headline-sm text-[15px] py-3.5 rounded-xl font-bold shadow-[0_0_12px_rgba(200,240,80,0.15)] hover:shadow-[0_0_20px_rgba(200,240,80,0.35)] transition-all flex items-center justify-center gap-2 active:scale-[0.98]" type="submit">
+                        Update Asset
+                    </button>
+                    <a class="flex-1 bg-surface-container-lowest border border-outline-variant text-on-surface font-headline-sm text-[15px] py-3.5 rounded-xl font-bold hover:bg-surface-container-high transition-colors flex items-center justify-center" href="{{ url_for('products') }}">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+            
+            {% else %}
+            
+            <h3 class="font-headline-sm text-headline-sm text-primary-container mb-6 flex items-center gap-2">
+                <span class="material-symbols-outlined">add_box</span>
+                New Asset Entry
+            </h3>
+            
+            <form class="space-y-4" action="{{ url_for('products') }}" method="POST">
+                <div class="space-y-1">
+                    <label class="font-label-md text-label-md text-on-surface-variant uppercase ml-1 block" for="name">Product Name *</label>
+                    <input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 focus:ring-1 focus:ring-primary-container focus:border-primary-container outline-none text-on-surface font-body-md transition-all" id="name" name="name" placeholder="e.g. Nexus Core Switch" type="text" required/>
+                </div>
+                
+                <div class="space-y-1">
+                    <label class="font-label-md text-label-md text-on-surface-variant uppercase ml-1 block" for="category">Category</label>
+                    <input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 focus:ring-1 focus:ring-primary-container focus:border-primary-container outline-none text-on-surface font-body-md transition-all" id="category" name="category" placeholder="e.g. Networking" type="text"/>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="font-label-md text-label-md text-on-surface-variant uppercase ml-1 block" for="price">Price ($) *</label>
+                        <input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 focus:ring-1 focus:ring-primary-container focus:border-primary-container outline-none text-on-surface font-body-md transition-all" id="price" name="price" step="0.01" min="0" placeholder="0.00" type="number" required/>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="font-label-md text-label-md text-on-surface-variant uppercase ml-1 block" for="quantity">Initial Qty *</label>
+                        <input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 focus:ring-1 focus:ring-primary-container focus:border-primary-container outline-none text-on-surface font-body-md transition-all" id="quantity" name="quantity" min="0" placeholder="0" type="number" required/>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="font-label-md text-label-md text-on-surface-variant uppercase ml-1 block" for="supplier_id">Supplier</label>
+                    <select class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-3 focus:ring-1 focus:ring-primary-container focus:border-primary-container outline-none text-on-surface font-body-md transition-all appearance-none cursor-pointer" id="supplier_id" name="supplier_id">
+                        <option value="">-- None --</option>
+                        {% for s in suppliers %}
+                        <option value="{{ s.supplier_id }}">{{ s.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="pt-4">
+                    <button class="w-full bg-primary-container text-on-primary-container font-headline-sm text-[15px] py-3.5 rounded-xl font-bold shadow-[0_0_12px_rgba(200,240,80,0.15)] hover:shadow-[0_0_20px_rgba(200,240,80,0.35)] transition-all flex items-center justify-center gap-2 active:scale-[0.98]" type="submit">
+                        <span class="material-symbols-outlined text-[18px]">add_box</span>
+                        Register Asset
+                    </button>
+                </div>
+            </form>
+            {% endif %}
+        </div>
+        
+        <!-- Insights card -->
+        <div class="bg-surface-container-high border border-outline-variant/30 rounded-xl overflow-hidden relative group">
+            <img class="w-full h-36 object-cover opacity-20 group-hover:opacity-40 transition-opacity duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBac7vcBaOCYbRLYWD3dVgIns9EJM5wDJPUFkgMMsbN7z553soQCM9OArxY0F2re3Cex3_skknk-KZevOQP6EYEgMG0U79MnNmoAdBRTqx7cjQ_t1nv8opfUBOwLcJir8VS1umvus5NRLgznom7ks3WLesA8loaUyuY2ikYYFme21r_1w7dpOBunyr-ccF1l6XhA_AfJIxb4nd6llqFecpRaU2Ud0YB_e_xnefJNinobbK2mTtDyRv0VujqkrMxv5AJ203GdxEPy1o" alt="Nexus Insights"/>
+            <div class="absolute inset-0 bg-gradient-to-t from-surface-container-high via-transparent to-transparent"></div>
+            <div class="absolute bottom-0 p-5">
+                <h4 class="font-headline-sm text-headline-sm text-primary-container font-bold">Nexus Insights</h4>
+                <p class="font-body-md text-on-surface-variant text-[11px] mt-1">Real-time heuristics index inventory turnover cycle. Automated re-order channels active.</p>
+            </div>
+        </div>
+    </div>
     {% endif %}
 </div>
+
+<script>
+    // Simple ambient glow pulse for low stock warnings
+    setInterval(() => {
+        const warningBadges = document.querySelectorAll('.status-low');
+        warningBadges.forEach(badge => {
+            badge.style.opacity = (Math.sin(Date.now() / 300) * 0.3 + 0.7).toString();
+        });
+    }, 50);
+</script>
 {% endblock %}
