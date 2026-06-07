@@ -1,7 +1,9 @@
 # NEXUS Command Center
 ### Terminal-Style Inventory Management System
 
-NEXUS is a next-generation, high-performance web terminal designed for real-time inventory metrics, transactional ledgers, and operator access control. Styled around the modern, high-contrast, dark-mode design system from Google Stitch ("Nexus Terminal"), NEXUS provides an interactive, glassmorphic layout backed by robust PostgreSQL transaction checking and Flask routing mechanisms.
+**Live Deployment:** [stock-inventory-system-38mr.onrender.com](https://stock-inventory-system-38mr.onrender.com/)
+
+NEXUS is a next-generation, high-performance web terminal designed for real-time inventory metrics, transactional ledgers, and operator access control. Styled around the modern, high-contrast, dark-mode design system ("Nexus Terminal"), NEXUS provides an interactive, glassmorphic layout backed by robust PostgreSQL transaction checking and Flask routing mechanisms.
 
 ---
 
