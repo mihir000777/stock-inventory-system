@@ -7,6 +7,19 @@ NEXUS is a next-generation, high-performance web terminal designed for real-time
 
 ---
 
+## 🛠️ Tech Stack
+
+*   **Backend Framework**: Python (Flask)
+*   **Relational Database**: PostgreSQL
+*   **Database Connectivity**: `psycopg2-binary` with `ThreadedConnectionPool`
+*   **Authentication & Hashing**: `werkzeug.security` (PBKDF2 password hashes)
+*   **Frontend**: HTML5, Vanilla JavaScript (dynamic alert telemetry & background polling)
+*   **Styling & UI**: Tailwind CSS (CDN configured with brand tokens), Glassmorphic effects
+*   **Typography & Icons**: Google Fonts (*Syne* & *JetBrains Mono*), Material Symbols Outlined
+*   **Deployment Platform**: Render (Web Service + Managed Database)
+
+---
+
 ## ⚡ Core Features
 
 *   **Bento-Grid Telemetry Dashboard**: Get instant access to real-time stats including total registered SKUs, low-stock warnings, total purchase volumes, sales, recent inbound logs, and active outbound telemetry records.
